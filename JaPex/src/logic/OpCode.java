@@ -45,21 +45,21 @@ public class OpCode {
 			case 0:
 				iinc(line,Integer.valueOf(lineTokens[0].substring(0,
 						lineTokens[0].length() - 1)),
-						Integer.valueOf(lineTokens[1].substring(0,
+						Integer.valueOf(lineTokens[2].substring(0,
 								lineTokens[0].length() - 1)),
-						Integer.valueOf(lineTokens[2]));
+						lineTokens[3]);
 			}
 
 		}
 
 	}
 
-	private static void iinc(String line, int byteNr, int index, int constant) {
+	private static void iinc(String line, int byteNr, int index, String constant) {
 		State state = new State(line,byteNr, Main.stateQueue
-				.get(Main.currentStateNr).getLocalVariables(), Main.stateQueue
-				.get(Main.currentStateNr).getOperandStack());
+				.get(Main.currentStateNr-1).getLocalVariables(), Main.stateQueue
+				.get(Main.currentStateNr-1).getOperandStack());
 		
-		state.setLocalVariableElement(index,String.valueOf(constant));
+		state.setLocalVariableElement(index,state.getLocalVariables().get(index)+" + "+String.valueOf(constant));
 		Main.stateQueue.add(state);
 		
 		
