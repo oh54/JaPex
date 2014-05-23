@@ -44,7 +44,8 @@ public class Main {
 
   public static void NextState() {
     String line = input.getLine(currentStateNr);
-    OpCode.toMatch(line);
+    String labelText=OpCode.toMatch(line);
+    updateUI(labelText);
     currentStateNr++;
   }
 

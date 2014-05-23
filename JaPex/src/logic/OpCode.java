@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Stack;
 
 public class OpCode {
-  public static void toMatch(String line) {
+  public static String toMatch(String line) {
 
     if (Main.currentStateNr == 0) {
       String[] parameters = line.substring(line.indexOf('(') + 1, line.indexOf(')')).split(",");
@@ -20,11 +20,11 @@ public class OpCode {
         }
       }
       Main.stateQueue.add(new State(line, -1, localVariables, new Stack<String>()));
-      Main.updateUI(line);
+      return line + ": " + "Method parameters are stored in local variables";
     } else if (Main.currentStateNr == 1) {
       Main.stateQueue.add(Main.stateQueue.get(0));
       Main.stateQueue.get(1).setLine(line);
-      Main.updateUI(line);
+      return line;
     } else {
 
       String[] regexArray =
@@ -48,10 +48,9 @@ public class OpCode {
 
       switch (matchingIndex) {
         case 0:
-          iinc(line, Integer.valueOf(lineTokens[0].substring(0, lineTokens[0].length() - 1)),
+          return iinc(line, Integer.valueOf(lineTokens[0].substring(0, lineTokens[0].length() - 1)),
               Integer.valueOf(lineTokens[2].substring(0, lineTokens[0].length() - 1)),
               lineTokens[3]);
-          break;
 
         case 1:
           System.out.println("works!");
@@ -192,9 +191,10 @@ public class OpCode {
           break;
       }
     }
+    return "Sellist opkoodi ei tunne";
   }
 
-  private static void iinc(String line, int byteNr, int index, String constant) {
+  private static String iinc(String line, int byteNr, int index, String constant) {
     State state =
         new State(line, byteNr, Main.stateQueue.get(Main.currentStateNr - 1).getLocalVariables(),
             Main.stateQueue.get(Main.currentStateNr - 1).getOperandStack());
@@ -202,7 +202,7 @@ public class OpCode {
     state.setLocalVariableElement(index,
         state.getLocalVariables().get(index) + " + " + String.valueOf(constant));
     Main.stateQueue.add(state);
-    Main.updateUI(line + ": increment local variable #index by signed byte const");
+    return line + ": increment local variable #index by signed byte const";
   }
 
   private static void consts(String line, int byteNr, String opLetter, String arg) {
