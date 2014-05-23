@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Stack;
 
 public class OpCode {
-  public static String toMatch(String line) {
+  public static void toMatch(String line) {
 
     if (Main.currentStateNr == 0) {
       String[] parameters = line.substring(line.indexOf('(') + 1, line.indexOf(')')).split(",");
@@ -13,18 +13,17 @@ public class OpCode {
       for (String parameter : parameters) {
         parameter = parameter.trim();
         if (parameter.equals("long") || parameter.equals("double")) {
-          localVariables.add(parameter);
-          localVariables.add(parameter);
+          localVariables.add(parameter + " (method parameter)");
+          localVariables.add(parameter + " (method parameter)");
         } else {
-          localVariables.add(parameter);
+          localVariables.add(parameter + " (method parameter)");
         }
       }
-      Main.stateQueue.add(new State(line, -1, localVariables, new Stack<String>()));
-      return line + ": " + "Method parameters are stored in local variables";
+      Main.stateQueue.add(new State(beautifyText(line,
+          "Method parameters are stored in local variables"), -1, localVariables,
+          new Stack<String>()));
     } else if (Main.currentStateNr == 1) {
-      Main.stateQueue.add(Main.stateQueue.get(0));
-      Main.stateQueue.get(1).setLine(line);
-      return line;
+      Main.stateQueue.add(createCurrentState(beautifyText(line, ""), -1));
     } else {
 
       String[] regexArray =
@@ -48,9 +47,10 @@ public class OpCode {
 
       switch (matchingIndex) {
         case 0:
-          return iinc(line, Integer.valueOf(lineTokens[0].substring(0, lineTokens[0].length() - 1)),
+          iinc(line, Integer.valueOf(lineTokens[0].substring(0, lineTokens[0].length() - 1)),
               Integer.valueOf(lineTokens[2].substring(0, lineTokens[0].length() - 1)),
               lineTokens[3]);
+          break;
 
         case 1:
           System.out.println("works!");
@@ -191,22 +191,32 @@ public class OpCode {
           break;
       }
     }
-    return "Sellist opkoodi ei tunne";
   }
 
-  private static String iinc(String line, int byteNr, int index, String constant) {
+  private static void iinc(String line, int byteNr, int index, String constant) {
     State state =
-        new State(line, byteNr, Main.stateQueue.get(Main.currentStateNr - 1).getLocalVariables(),
-            Main.stateQueue.get(Main.currentStateNr - 1).getOperandStack());
+        createCurrentState(
+            beautifyText(line, "Increment local variable #" + index + " by signed byte const "
+                + constant), byteNr);
 
     state.setLocalVariableElement(index,
         state.getLocalVariables().get(index) + " + " + String.valueOf(constant));
     Main.stateQueue.add(state);
-    return line + ": increment local variable #index by signed byte const";
   }
 
   private static void consts(String line, int byteNr, String opLetter, String arg) {
 
   }
-  
+
+  private static State createCurrentState(String line, int byteNr) {
+    return new State(line, byteNr, new ArrayList<String>(Main.stateQueue.get(
+        Main.currentStateNr - 1).getLocalVariables()), (Stack) Main.stateQueue
+        .get(Main.currentStateNr - 1).getOperandStack().clone());
+  }
+
+  private static String beautifyText(String line, String explanation) {
+    return "<html><b>" + line + "</b><br><font color='green'>Explanation: </font>" + explanation
+        + "</html>";
+  }
+
 }

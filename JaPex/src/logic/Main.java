@@ -40,29 +40,40 @@ public class Main {
 
   public static void toStart() {
     currentStateNr = 0;
+    stateQueue = new LinkedList<State>();
+    ui.clearAll();
   }
 
-  public static void NextState() {
-    String line = input.getLine(currentStateNr);
-    String labelText=OpCode.toMatch(line);
-    updateUI(labelText);
+  public static void nextState() {
+    if (!(currentStateNr < stateQueue.size())) {
+      String line = input.getLine(currentStateNr);
+      OpCode.toMatch(line);
+    }
+    updateUI(true);
     currentStateNr++;
   }
 
-  public static void updateUI(String line) {
-    ui.lblCurrent.setText(line);
-    ui.ClearLocals();
-    for (String str : Main.stateQueue.get(currentStateNr).getLocalVariables()) {
+  public static void previousState() {
+    if (currentStateNr > 1) {
+      currentStateNr--;
+      updateUI(false);
+    } else {
+      toStart();
+    }
+  }
+
+  public static void updateUI(boolean next) {
+    ui.clearLocals();
+    int stateIndex = (next ? currentStateNr : currentStateNr - 1);
+    ui.lblCurrent.setText(stateQueue.get(stateIndex).getLine());
+    for (String str : stateQueue.get(stateIndex).getLocalVariables()) {
       ui.addLocals(str);
     }
-    ui.ClearStack();
-    for (String str : Main.stateQueue.get(currentStateNr).getOperandStack()) {
+    ui.clearStack();
+    for (String str : stateQueue.get(stateIndex).getOperandStack()) {
       ui.addStack(str);
     }
   }
 
-  public static void PreviousState() {
-    // TODO:
-  }
-  
+
 }

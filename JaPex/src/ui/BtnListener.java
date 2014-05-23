@@ -17,10 +17,10 @@ public class BtnListener implements ActionListener {
       case "fb":
         Main.toStart();
       case "b":
-        Main.PreviousState();
+        Main.previousState();
         break;
       case "f":
-        Main.NextState();
+        Main.nextState();
         break;
       case "ff":
         ;

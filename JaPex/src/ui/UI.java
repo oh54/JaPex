@@ -103,7 +103,7 @@ public class UI extends JFrame {
     });
 
     pnlWrap.add(btnPanel);
-    pnlWrap.add(lblCurrent, "wrap, span");
+    pnlWrap.add(lblCurrent, "wrap,span");
     pnlWrap.add(scrlpInput, "grow, push");
     pnlWrap.add(pnlLocal, "width 250!, growy, pushy");
     pnlWrap.add(pnlStack, "width 250!, growy, pushy");
@@ -114,7 +114,7 @@ public class UI extends JFrame {
     setVisible(true);
   }
 
-  public void ClearLocals() {
+  public void clearLocals() {
     DefaultListModel<String> listModel = (DefaultListModel<String>) localList.getModel();
     listModel.removeAllElements();
   }
@@ -124,7 +124,7 @@ public class UI extends JFrame {
     listModel.addElement(element);
   }
 
-  public void ClearStack() {
+  public void clearStack() {
     DefaultListModel<String> listModel = (DefaultListModel<String>) stackList.getModel();
     listModel.removeAllElements();
   }
@@ -132,6 +132,11 @@ public class UI extends JFrame {
   public void addStack(String element) {
     DefaultListModel<String> listModel = (DefaultListModel<String>) stackList.getModel();
     listModel.addElement(element);
+  }
+  public void clearAll(){
+    clearLocals();
+    clearStack();
+    lblCurrent.setText("");
   }
 
 }
