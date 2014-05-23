@@ -28,10 +28,10 @@ public class UI extends JFrame {
 
     setTitle("Simple JVM simulator");
     setDefaultCloseOperation(EXIT_ON_CLOSE);
-    setMinimumSize(new Dimension(950, 700));
+    setMinimumSize(new Dimension(1000, 700));
 
     JPanel pnlWrap = new JPanel();
-    pnlWrap.setLayout(new MigLayout("", "[center] [] []", "[min!] []"));
+    pnlWrap.setLayout(new MigLayout("", "[center] [center] [center]", "[min!] [] []"));
 
     JPanel btnPanel = new JPanel();
 
@@ -73,6 +73,9 @@ public class UI extends JFrame {
 
     JScrollPane pnlLocal = new JScrollPane(localList);
     JScrollPane pnlStack = new JScrollPane(stackList);
+    JLabel lblInput=new JLabel("<html><b>Paste or type Javap output (only the static method itself)</b></html>");
+    JLabel lblLocal=new JLabel("<html><b>Local variables</b></html>");
+    JLabel lblStack=new JLabel("<html><b>Operand Stack</b></html>");
 
     txaInput =
         new JTextArea(
@@ -103,10 +106,13 @@ public class UI extends JFrame {
     });
 
     pnlWrap.add(btnPanel);
-    pnlWrap.add(lblCurrent, "wrap,span");
+    pnlWrap.add(lblCurrent, "wrap,span, align left");
     pnlWrap.add(scrlpInput, "grow, push");
     pnlWrap.add(pnlLocal, "width 250!, growy, pushy");
-    pnlWrap.add(pnlStack, "width 250!, growy, pushy");
+    pnlWrap.add(pnlStack, "width 250!, growy, pushy,wrap");
+    pnlWrap.add(lblInput);
+    pnlWrap.add(lblLocal);
+    pnlWrap.add(lblStack);
 
     add(pnlWrap);
 
