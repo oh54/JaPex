@@ -33,6 +33,7 @@ public class Main {
 
 		ui = new UI();
 		ui.setVisible(true);
+
 	}
 
 	public static void initalizeInput(String in) {
@@ -53,13 +54,14 @@ public class Main {
 	private static void updateUI(String line) {
 		ui.lblCurrent.setText(line);
 		ui.ClearLocals();
-		for (String str: Main.stateQueue.get(currentStateNr).getLocalVariables()){
+		for (String str : Main.stateQueue.get(currentStateNr)
+				.getLocalVariables()) {
 			ui.addLocals(str);
 		}
 		ui.ClearStack();
-		for (String str: Main.stateQueue.get(currentStateNr).getOperandStack()){
+		for (String str : Main.stateQueue.get(currentStateNr).getOperandStack()) {
 			ui.addStack(str);
-		} 
+		}
 	}
 
 	public static void PreviousState() {
