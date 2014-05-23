@@ -70,9 +70,12 @@ public class Main {
       ui.addLocals(str);
     }
     ui.clearStack();
-    for (String str : stateQueue.get(stateIndex).getOperandStack()) {
-      ui.addStack(str);
+    for(int i=stateQueue.get(stateIndex).getOperandStack().size()-1;i>=0;i--){
+      ui.addStack(stateQueue.get(stateIndex).getOperandStack().get(i));
     }
+//    for (String str : stateQueue.get(stateIndex).getOperandStack()) {
+//      ui.addStack(str);
+//    }
   }
 
 

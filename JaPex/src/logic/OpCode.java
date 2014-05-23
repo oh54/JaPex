@@ -23,7 +23,7 @@ public class OpCode {
           "Method parameters are stored in local variables"), -1, localVariables,
           new Stack<String>()));
     } else if (Main.currentStateNr == 1) {
-      Main.stateQueue.add(createCurrentState(beautifyText(line, ""), -1));
+      Main.stateQueue.add(createState(beautifyText(line, ""), -1));
     } else {
 
       String[] regexArray =
@@ -47,33 +47,29 @@ public class OpCode {
 
       switch (matchingIndex) {
         case 0:
-          iinc(line, Integer.valueOf(lineTokens[0].substring(0, lineTokens[0].length() - 1)),
+          iinc(line, getByteNr(lineTokens[0]),
               Integer.valueOf(lineTokens[2].substring(0, lineTokens[0].length() - 1)),
               lineTokens[3]);
           break;
 
         case 1:
           System.out.println("works!");
-          // TODO
-          // aload x, dload x etc
+          load(line,getByteNr(lineTokens[0]),Integer.valueOf(lineTokens[2]));
           break;
 
         case 2:
           System.out.println("works2!");
-          // TODO
-          // aload_x, dload_x etc
+          load(line,getByteNr(lineTokens[0]));
           break;
 
         case 3:
           System.out.println("works3!");
-          // TODO
-          // astore x, dstore x etc
+          store(line,getByteNr(lineTokens[0]),Integer.valueOf(lineTokens[2]));
           break;
 
         case 4:
           System.out.println("works4!");
-          // TODO
-          // astore_x, dstore_x etc
+          store(line,getByteNr(lineTokens[0]));
           break;
 
         case 5:
@@ -89,9 +85,7 @@ public class OpCode {
           break;
 
         case 7:
-          System.out.println("works7!");
-          // TODO
-          // iconst_0, iconst_m1, fconst_2 etc
+          xconst_y(line, getByteNr(lineTokens[0]));
           break;
 
         case 8:
@@ -186,16 +180,53 @@ public class OpCode {
 
         case 23:
           System.out.println("works23!");
-          // TODO
+          ifcmp(line,getByteNr(lineTokens[0]),Integer.valueOf(lineTokens[2]));
           // if_acmpeq,if_acmpne,if_icmpeq,if_icmpge,if_icmpgt,if_icmple,if_icmplt,if_icmpne
           break;
       }
     }
   }
 
+
+  private static void ifcmp(String line, Integer byteNr, int goTo) {
+    char type=line.split(" ")[1].charAt(0);
+    String cmpMethod=line.substring(line.indexOf("cmp")+3,line.indexOf("cmp")+5);
+    switch(cmpMethod){
+    }
+    
+  }
+
+
+  private static void load(String line, Integer byteNr) {
+    load(line,byteNr,Integer.parseInt(String.valueOf((line.charAt(line.length()-1)))));
+    
+  }
+
+
+  private static void load(String line, Integer byteNr, int index) {
+    char type = line.split(" ")[1].charAt(0);
+    State state= createState(beautifyText(line, "load a type "+type+" value from local variable #"+index),byteNr);
+    state.addStack(state.getLocalVariables().get(index));
+    Main.stateQueue.add(state);
+  }
+
+
+  private static void store(String line, Integer byteNr) {
+    
+    store(line,byteNr,Integer.parseInt(String.valueOf((line.charAt(line.length()-1)))));
+    
+  }
+  private static void store(String line, Integer byteNr, int index){
+    char type = line.split(" ")[1].charAt(0);
+    State state= createState(beautifyText(line, "store a type "+type+" value (popped from stack) into a local variable #"+index),byteNr);
+    state.setLocalVariableElement(index, state.popStack());
+    Main.stateQueue.add(state);
+  }
+
+
   private static void iinc(String line, int byteNr, int index, String constant) {
     State state =
-        createCurrentState(
+        createState(
             beautifyText(line, "Increment local variable #" + index + " by signed byte const "
                 + constant), byteNr);
 
@@ -204,13 +235,23 @@ public class OpCode {
     Main.stateQueue.add(state);
   }
 
-  private static void consts(String line, int byteNr, String opLetter, String arg) {
-
+  private static void xconst_y(String line, int byteNr) {
+    char type = line.split(" ")[1].charAt(0);
+    String value = String.valueOf(line.charAt(line.length()-1));
+    State state =
+        createState(
+            beautifyText(line, "load the type " + type + " value " + value + " onto the stack"),
+            byteNr);
+    
+    state.getOperandStack().push(value + " (type: "+type+")");
+    if (type == 'l' || type == 'd') {
+      state.getOperandStack().push(value + " (type: "+type+")");}
+    Main.stateQueue.add(state);
   }
 
-  private static State createCurrentState(String line, int byteNr) {
+  private static State createState(String line, int byteNr) {
     return new State(line, byteNr, new ArrayList<String>(Main.stateQueue.get(
-        Main.currentStateNr - 1).getLocalVariables()), (Stack) Main.stateQueue
+        Main.currentStateNr - 1).getLocalVariables()), (Stack<String>) Main.stateQueue
         .get(Main.currentStateNr - 1).getOperandStack().clone());
   }
 
@@ -219,4 +260,7 @@ public class OpCode {
         + "</html>";
   }
 
+  private static Integer getByteNr(String lineToken) {
+    return Integer.valueOf(lineToken.substring(0, lineToken.length() - 1));
+  }
 }

@@ -28,15 +28,19 @@ public class State implements Cloneable {
   }
 
   void setLocalVariableElement(int index, String value) {
-    this.localVariables.set(index, value);
+    if(index<localVariables.size()){
+    this.localVariables.set(index, value);}
+    else{
+      localVariables.add(value);
+    }
   }
 
-  private void addStack(String elem) {
+  void addStack(String elem) {
     this.operandStack.add(elem);
   }
 
-  private void popStack() {
-    this.operandStack.pop();
+  String popStack() {
+    return this.operandStack.pop();
   }
 
   public Stack<String> getOperandStack() {
@@ -46,8 +50,10 @@ public class State implements Cloneable {
   public List<String> getLocalVariables() {
     return localVariables;
   }
-  public String toString(){
-    return "Line: " +line+"\noperandStack:"+ operandStack.toString()+"\nlocalVariables: "+Arrays.toString(localVariables.toArray())+"\nbyteNr: "+byteNr;
+
+  public String toString() {
+    return "Line: " + line + "\noperandStack:" + operandStack.toString() + "\nlocalVariables: "
+        + Arrays.toString(localVariables.toArray()) + "\nbyteNr: " + byteNr;
   }
-  
+
 }

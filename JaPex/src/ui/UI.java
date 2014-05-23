@@ -99,6 +99,7 @@ public class UI extends JFrame {
       public void changedUpdate(DocumentEvent e) {}
 
       public void insertUpdate(DocumentEvent e) {
+        Main.toStart();
         Main.initalizeInput(txaInput.getText());
       }
 
