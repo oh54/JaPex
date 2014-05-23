@@ -8,20 +8,22 @@ import javax.swing.JButton;
 
 import logic.Main;
 
-public class BtnListener implements ActionListener{
+public class BtnListener implements ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent arg0) {
-    String btnInfo=((ImageIcon)((JButton)arg0.getSource()).getIcon()).getDescription();
-    switch(btnInfo){
-      case "fb":Main.toStart();
-      case "b":Main.PreviousState();break;
-      case "f": Main.NextState();break;
-      case "ff":;
+    String btnInfo = ((ImageIcon) ((JButton) arg0.getSource()).getIcon()).getDescription();
+    switch (btnInfo) {
+      case "fb":
+        Main.toStart();
+      case "b":
+        Main.PreviousState();
+        break;
+      case "f":
+        Main.NextState();
+        break;
+      case "ff":
+        ;
     }
-
-
-    
   }
-
 }
