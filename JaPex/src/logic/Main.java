@@ -40,9 +40,9 @@ public class Main {
     ui.disableButtons();
     currentStateNr = 0;
     stateQueue = new LinkedList<State>();
-    String in=ui.txaInput.getText();
+    String in = ui.txaInput.getText();
     input = new Input(in);
-    for (String line:input.getInputTokens()){
+    for (String line : input.getInputTokens()) {
       OpCode.toMatch(line);
       currentStateNr++;
     }
@@ -59,11 +59,11 @@ public class Main {
     if (currentStateNr < stateQueue.size()) {
       updateUI(true);
       currentStateNr++;
-      
-    }else{
+
+    } else {
       ui.lblCurrent.setText("Oled jõudnud meetodi lõppu");
     }
-    
+
   }
 
   public static void previousState() {
@@ -106,7 +106,7 @@ public class Main {
               .get(stateQueue.get(stateIndex).getLocalVariables().lastIndexOf(storedValue) - 1)) {
         varNr--;
       }
-      first=false;
+      first = false;
       ui.addLocals(varNr++ + ":  " + storedValue.toString());
     }
   }

@@ -72,19 +72,16 @@ public class UI extends JFrame {
 
     JScrollPane pnlLocal = new JScrollPane(localList);
     JScrollPane pnlStack = new JScrollPane(stackList);
-    JLabel lblInput=new JLabel("<html><b>Paste or type Javap output (only the static method itself). Initialize after editing.</b></html>");
-    JLabel lblLocal=new JLabel("<html><b>Local variables</b></html>");
-    JLabel lblStack=new JLabel("<html><b>Operand Stack</b></html>");
+    JLabel lblInput =
+        new JLabel(
+            "<html><b>Paste or type Javap output (only the static method itself). Initialize after editing.</b></html>");
+    JLabel lblLocal = new JLabel("<html><b>Local variables</b></html>");
+    JLabel lblStack = new JLabel("<html><b>Operand Stack</b></html>");
 
     txaInput =
-        new JTextArea(
-            "  public static double meetod(double, int);\r\n"
-                + "    Code:\r\n"
-                + "       0: iinc          2, 1\r\n"
-                + "       3: iconst_0\r\n"
-                + "       4: istore_3\r\n"
-                + "       5: iload_3\r\n"
-                + "       6: iconst_4");
+        new JTextArea("  public static double meetod(double, int);\r\n" + "    Code:\r\n"
+            + "       0: iinc          2, 1\r\n" + "       3: iconst_0\r\n"
+            + "       4: istore_3\r\n" + "       5: iload_3\r\n" + "       6: iconst_4");
     JScrollPane scrlpInput = new JScrollPane(txaInput);
 
     pnlWrap.add(btnPanel);
@@ -121,18 +118,21 @@ public class UI extends JFrame {
     DefaultListModel<String> listModel = (DefaultListModel<String>) stackList.getModel();
     listModel.addElement(element);
   }
-  public void clearAll(){
+
+  public void clearAll() {
     clearLocals();
     clearStack();
     lblCurrent.setText("");
   }
-  public void disableButtons(){
+
+  public void disableButtons() {
     btnB.setEnabled(false);
     btnFB.setEnabled(false);
     btnF.setEnabled(false);
     btnInit.setEnabled(false);
   }
-  public void enableButtons(){
+
+  public void enableButtons() {
     btnB.setEnabled(true);
     btnFB.setEnabled(true);
     btnF.setEnabled(true);

@@ -19,7 +19,8 @@ public class Input {
     return spaceTokens;
 
   }
-  public String[] getInputTokens(){
+
+  public String[] getInputTokens() {
     return this.inputTokens;
   }
 

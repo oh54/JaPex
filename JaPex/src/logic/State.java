@@ -11,7 +11,8 @@ public class State implements Cloneable {
   private List<StoredValue> localVariables = new ArrayList<StoredValue>();
   private Stack<StoredValue> operandStack = new Stack<StoredValue>();
 
-  public State(String line, int byteNr, List<StoredValue> localVariables, Stack<StoredValue> operandStack) {
+  public State(String line, int byteNr, List<StoredValue> localVariables,
+      Stack<StoredValue> operandStack) {
     super();
     this.line = line;
     this.localVariables = localVariables;
@@ -28,9 +29,9 @@ public class State implements Cloneable {
   }
 
   void setLocalVariableElement(int index, StoredValue value) {
-    if(index<localVariables.size()){
-    this.localVariables.set(index, value);}
-    else{
+    if (index < localVariables.size()) {
+      this.localVariables.set(index, value);
+    } else {
       localVariables.add(value);
     }
   }

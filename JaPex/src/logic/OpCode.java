@@ -455,25 +455,12 @@ public class OpCode {
 
   private static void pop(String line, String input, int byteNr) {
     State state = createState(beautifyText(line, "discard the top value(s) on the stack."), byteNr);
-    if (input == "pop") {
-      if (state.getOperandStack().peek().getType().matches("l|d")) {
-        state.popStack();
-        state.popStack();
-      } else if (state.getOperandStack().peek().getType().matches("i|f")) {
-        state.popStack();
-      }
-    } else if (input == "pop2") {
-      if (state.getOperandStack().peek().getType().matches("l|d")) {
-        state.popStack();
-        state.popStack();
-        state.popStack();
-        state.popStack();
-      } else if (state.getOperandStack().peek().getType().matches("i|f")) {
-        state.popStack();
-        state.popStack();
-      }
+    if (input.equals("pop")) {
+      state.popStack();
+    } else {
+      state.popStack();
+      state.popStack();
     }
-    // Siin vist see stored value värk puudu? Ma ikka väga ei taju seda.
     Main.stateQueue.add(state);
   }
 
