@@ -12,6 +12,7 @@ public class Main {
   public static LinkedList<State> stateQueue = new LinkedList<State>();
   public static int currentStateNr = 0;
   public static UI ui;
+  public static int varNr;
 
   public static void main(String[] args) throws ClassNotFoundException, InstantiationException,
       IllegalAccessException, UnsupportedLookAndFeelException {
@@ -63,20 +64,38 @@ public class Main {
   }
 
   public static void updateUI(boolean next) {
-    ui.clearLocals();
     int stateIndex = (next ? currentStateNr : currentStateNr - 1);
     ui.lblCurrent.setText(stateQueue.get(stateIndex).getLine());
-    for (String str : stateQueue.get(stateIndex).getLocalVariables()) {
-      ui.addLocals(str);
-    }
-    ui.clearStack();
-    for(int i=stateQueue.get(stateIndex).getOperandStack().size()-1;i>=0;i--){
-      ui.addStack(stateQueue.get(stateIndex).getOperandStack().get(i));
-    }
-//    for (String str : stateQueue.get(stateIndex).getOperandStack()) {
-//      ui.addStack(str);
-//    }
+    updateLocals(stateIndex);
+    updateStack(stateIndex);
   }
 
+  private static void updateStack(int stateIndex) {
+    ui.clearStack();
+    int varNr = 0;
+    boolean first = true;
+    for (int i = stateQueue.get(stateIndex).getOperandStack().size() - 1; i >= 0; i--) {
+      StoredValue value = stateQueue.get(stateIndex).getOperandStack().get(i);
+      if (!first && value == stateQueue.get(stateIndex).getOperandStack().get(i + 1)) {
+        varNr--;
+      }
+      first = false;
+      ui.addStack(varNr++ + ". " + value.toString());
+    }
+  }
 
+  private static void updateLocals(int stateIndex) {
+    ui.clearLocals();
+    boolean first = true;
+    int varNr = 0;
+    for (StoredValue storedValue : stateQueue.get(stateIndex).getLocalVariables()) {
+      if (!first
+          && storedValue == stateQueue.get(stateIndex).getLocalVariables()
+              .get(stateQueue.get(stateIndex).getLocalVariables().lastIndexOf(storedValue) - 1)) {
+        varNr--;
+      }
+      first=false;
+      ui.addLocals(varNr++ + ". " + storedValue.toString());
+    }
+  }
 }

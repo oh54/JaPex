@@ -9,19 +9,23 @@ public class OpCode {
 
     if (Main.currentStateNr == 0) {
       String[] parameters = line.substring(line.indexOf('(') + 1, line.indexOf(')')).split(",");
-      List<String> localVariables = new ArrayList<String>();
+      List<StoredValue> localVariables = new ArrayList<StoredValue>();
       for (String parameter : parameters) {
+
         parameter = parameter.trim();
+        if (parameter.contains(".")) {
+          parameter = parameter.substring(parameter.lastIndexOf('.') + 1);
+        }
+        StoredValue storedValue=new StoredValue("method parameter", parameter);
+        localVariables.add(storedValue);
         if (parameter.equals("long") || parameter.equals("double")) {
-          localVariables.add(parameter + " (method parameter)");
-          localVariables.add(parameter + " (method parameter)");
-        } else {
-          localVariables.add(parameter + " (method parameter)");
+          localVariables.add(storedValue);
         }
       }
       Main.stateQueue.add(new State(beautifyText(line,
           "Method parameters are stored in local variables"), -1, localVariables,
-          new Stack<String>()));
+          new Stack<StoredValue>()));
+
     } else if (Main.currentStateNr == 1) {
       Main.stateQueue.add(createState(beautifyText(line, ""), -1));
     } else {
@@ -209,7 +213,15 @@ public class OpCode {
             beautifyText(line, "load a type " + type + " value from local variable #" + index),
             byteNr);
     state.addStack(state.getLocalVariables().get(index));
+    if (isLD(index, state)) {
+      state.addStack(state.getLocalVariables().get(index));
+    }
     Main.stateQueue.add(state);
+  }
+
+
+  private static boolean isLD(int index, State state) {
+    return state.getLocalVariables().get(index).getType().matches("l|d");
   }
 
 
@@ -226,6 +238,9 @@ public class OpCode {
             beautifyText(line, "store a type " + type
                 + " value (popped from stack) into a local variable #" + index), byteNr);
     state.setLocalVariableElement(index, state.popStack());
+    if (isLD(index,state)){
+      state.setLocalVariableElement(index+1, state.popStack());
+    }
     Main.stateQueue.add(state);
   }
 
@@ -235,9 +250,11 @@ public class OpCode {
         createState(
             beautifyText(line, "Increment local variable #" + index + " by signed byte const "
                 + constant), byteNr);
+    StoredValue value=state.getLocalVariables().get(index);
+    value.addToValue(Integer.valueOf(constant));
 
     state.setLocalVariableElement(index,
-        state.getLocalVariables().get(index) + " + " + String.valueOf(constant));
+        value);
     Main.stateQueue.add(state);
   }
 
@@ -249,9 +266,10 @@ public class OpCode {
             beautifyText(line, "load the type " + type + " value " + value + " onto the stack"),
             byteNr);
 
-    state.getOperandStack().push(value + " (type: " + type + ")");
     if (type == 'l' || type == 'd') {
-      state.getOperandStack().push(value + " (type: " + type + ")");
+      state.getOperandStack().push(new StoredValue(value, String.valueOf(type), true));
+    } else {
+      state.getOperandStack().push(new StoredValue(value, String.valueOf(type)));
     }
     Main.stateQueue.add(state);
   }
@@ -266,35 +284,38 @@ public class OpCode {
     State state =
         createState(beautifyText(line, "add two values of the following type: " + type), byteNr);
     String sum = "";
+
     if (type == 'i') {
       sum =
-          Integer.toString(Integer.valueOf(state.getOperandStack().pop().split(" ")[0])
-              + Integer.valueOf(state.getOperandStack().pop().split(" ")[0]));
+          Integer.toString(Integer.valueOf(state.popStack().getValue())
+              + Integer.valueOf(state.popStack().getValue()));
     } else if (type == 'd') {
-      double d1 = Double.valueOf(state.getOperandStack().pop().split(" ")[0]);
-      state.getOperandStack().pop();
-      state.getOperandStack().pop();
-      sum = Double.toString(d1 + Double.valueOf(state.getOperandStack().pop().split(" ")[0]));
+      sum =
+          Double.toString(Double.valueOf(state.popStack().getValue()
+              + Double.valueOf(state.popStack().getValue())));
     } else if (type == 'f') {
       sum =
-          Float.toString(Float.valueOf(state.getOperandStack().pop().split(" ")[0])
-              + Float.valueOf(state.getOperandStack().pop().split(" ")[0]));
+          Float.toString(Float.valueOf(state.popStack().getValue())
+              + Float.valueOf(state.popStack().getValue()));
     } else if (type == 'l') {
-      long l1 = Long.valueOf(state.getOperandStack().pop().split(" ")[0]);
-      state.getOperandStack().pop();
-      state.getOperandStack().pop();
-      sum = Long.toString(l1 + Long.valueOf(state.getOperandStack().pop().split(" ")[0]));
+
+      sum =
+          Long.toString(Long.valueOf(state.popStack().getValue())
+              + Long.valueOf(state.popStack().getValue()));
     }
-    state.getOperandStack().push(sum + " (type: " + type + ")");
     if (type == 'd' || type == 'l') {
-      state.getOperandStack().push(sum + " (type: " + type + ")");
+      state.getOperandStack()
+          .push(new StoredValue(String.valueOf(sum), String.valueOf(type), true));
+    } else {
+      state.getOperandStack().push(new StoredValue(String.valueOf(sum), String.valueOf(type)));
     }
     Main.stateQueue.add(state);
   }
 
+  @SuppressWarnings("unchecked")
   private static State createState(String line, int byteNr) {
-    return new State(line, byteNr, new ArrayList<String>(Main.stateQueue.get(
-        Main.currentStateNr - 1).getLocalVariables()), (Stack<String>) Main.stateQueue
+    return new State(line, byteNr, new ArrayList<StoredValue>(Main.stateQueue.get(
+        Main.currentStateNr - 1).getLocalVariables()), (Stack<StoredValue>) Main.stateQueue
         .get(Main.currentStateNr - 1).getOperandStack().clone());
   }
 

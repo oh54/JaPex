@@ -8,10 +8,10 @@ import java.util.Stack;
 public class State implements Cloneable {
   private String line;
   private int byteNr;
-  private List<String> localVariables = new ArrayList<String>();
-  private Stack<String> operandStack = new Stack<String>();
+  private List<StoredValue> localVariables = new ArrayList<StoredValue>();
+  private Stack<StoredValue> operandStack = new Stack<StoredValue>();
 
-  public State(String line, int byteNr, List<String> localVariables, Stack<String> operandStack) {
+  public State(String line, int byteNr, List<StoredValue> localVariables, Stack<StoredValue> operandStack) {
     super();
     this.line = line;
     this.localVariables = localVariables;
@@ -27,7 +27,7 @@ public class State implements Cloneable {
     this.line = line;
   }
 
-  void setLocalVariableElement(int index, String value) {
+  void setLocalVariableElement(int index, StoredValue value) {
     if(index<localVariables.size()){
     this.localVariables.set(index, value);}
     else{
@@ -35,19 +35,19 @@ public class State implements Cloneable {
     }
   }
 
-  void addStack(String elem) {
+  void addStack(StoredValue elem) {
     this.operandStack.add(elem);
   }
 
-  String popStack() {
+  StoredValue popStack() {
     return this.operandStack.pop();
   }
 
-  public Stack<String> getOperandStack() {
+  public Stack<StoredValue> getOperandStack() {
     return operandStack;
   }
 
-  public List<String> getLocalVariables() {
+  public List<StoredValue> getLocalVariables() {
     return localVariables;
   }
 
