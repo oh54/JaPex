@@ -54,22 +54,22 @@ public class OpCode {
 
         case 1:
           System.out.println("works!");
-          load(line,getByteNr(lineTokens[0]),Integer.valueOf(lineTokens[2]));
+          load(line, getByteNr(lineTokens[0]), Integer.valueOf(lineTokens[2]));
           break;
 
         case 2:
           System.out.println("works2!");
-          load(line,getByteNr(lineTokens[0]));
+          load(line, getByteNr(lineTokens[0]));
           break;
 
         case 3:
           System.out.println("works3!");
-          store(line,getByteNr(lineTokens[0]),Integer.valueOf(lineTokens[2]));
+          store(line, getByteNr(lineTokens[0]), Integer.valueOf(lineTokens[2]));
           break;
 
         case 4:
           System.out.println("works4!");
-          store(line,getByteNr(lineTokens[0]));
+          store(line, getByteNr(lineTokens[0]));
           break;
 
         case 5:
@@ -81,6 +81,7 @@ public class OpCode {
         case 6:
           System.out.println("works6!");
           // TODO
+          add(line, getByteNr(lineTokens[0]));
           // iadd, dadd, fadd, ladd
           break;
 
@@ -180,7 +181,7 @@ public class OpCode {
 
         case 23:
           System.out.println("works23!");
-          ifcmp(line,getByteNr(lineTokens[0]),Integer.valueOf(lineTokens[2]));
+          ifcmp(line, getByteNr(lineTokens[0]), Integer.valueOf(lineTokens[2]));
           // if_acmpeq,if_acmpne,if_icmpeq,if_icmpge,if_icmpgt,if_icmple,if_icmplt,if_icmpne
           break;
       }
@@ -189,36 +190,41 @@ public class OpCode {
 
 
   private static void ifcmp(String line, Integer byteNr, int goTo) {
-    char type=line.split(" ")[1].charAt(0);
-    String cmpMethod=line.substring(line.indexOf("cmp")+3,line.indexOf("cmp")+5);
-    switch(cmpMethod){
+    char type = line.split(" ")[1].charAt(0);
+    String cmpMethod = line.substring(line.indexOf("cmp") + 3, line.indexOf("cmp") + 5);
+    switch (cmpMethod) {
     }
-    
   }
 
 
   private static void load(String line, Integer byteNr) {
-    load(line,byteNr,Integer.parseInt(String.valueOf((line.charAt(line.length()-1)))));
-    
+    load(line, byteNr, Integer.parseInt(String.valueOf((line.charAt(line.length() - 1)))));
   }
 
 
   private static void load(String line, Integer byteNr, int index) {
     char type = line.split(" ")[1].charAt(0);
-    State state= createState(beautifyText(line, "load a type "+type+" value from local variable #"+index),byteNr);
+    State state =
+        createState(
+            beautifyText(line, "load a type " + type + " value from local variable #" + index),
+            byteNr);
     state.addStack(state.getLocalVariables().get(index));
     Main.stateQueue.add(state);
   }
 
 
   private static void store(String line, Integer byteNr) {
-    
-    store(line,byteNr,Integer.parseInt(String.valueOf((line.charAt(line.length()-1)))));
-    
+
+    store(line, byteNr, Integer.parseInt(String.valueOf((line.charAt(line.length() - 1)))));
+
   }
-  private static void store(String line, Integer byteNr, int index){
+
+  private static void store(String line, Integer byteNr, int index) {
     char type = line.split(" ")[1].charAt(0);
-    State state= createState(beautifyText(line, "store a type "+type+" value (popped from stack) into a local variable #"+index),byteNr);
+    State state =
+        createState(
+            beautifyText(line, "store a type " + type
+                + " value (popped from stack) into a local variable #" + index), byteNr);
     state.setLocalVariableElement(index, state.popStack());
     Main.stateQueue.add(state);
   }
@@ -237,15 +243,52 @@ public class OpCode {
 
   private static void xconst_y(String line, int byteNr) {
     char type = line.split(" ")[1].charAt(0);
-    String value = String.valueOf(line.charAt(line.length()-1));
+    String value = String.valueOf(line.charAt(line.length() - 1));
     State state =
         createState(
             beautifyText(line, "load the type " + type + " value " + value + " onto the stack"),
             byteNr);
-    
-    state.getOperandStack().push(value + " (type: "+type+")");
+
+    state.getOperandStack().push(value + " (type: " + type + ")");
     if (type == 'l' || type == 'd') {
-      state.getOperandStack().push(value + " (type: "+type+")");}
+      state.getOperandStack().push(value + " (type: " + type + ")");
+    }
+    Main.stateQueue.add(state);
+  }
+
+  /*
+   * To test add method: public static double meetod(double, int); Code: 0: iinc 2, 1 3: iconst_2 4:
+   * iconst_2 4: iadd 5: fconst_1 6: fconst_1 7: fadd 10: dconst_1 13: dconst_1 14: dadd 17:
+   * lconst_1 20: lconst_1 23: ladd 24: iload_2 25: i2d 26: dadd 27: dreturn
+   */
+  private static void add(String line, int byteNr) {
+    char type = line.split(" ")[1].charAt(0);
+    State state =
+        createState(beautifyText(line, "add two values of the following type: " + type), byteNr);
+    String sum = "";
+    if (type == 'i') {
+      sum =
+          Integer.toString(Integer.valueOf(state.getOperandStack().pop().split(" ")[0])
+              + Integer.valueOf(state.getOperandStack().pop().split(" ")[0]));
+    } else if (type == 'd') {
+      double d1 = Double.valueOf(state.getOperandStack().pop().split(" ")[0]);
+      state.getOperandStack().pop();
+      state.getOperandStack().pop();
+      sum = Double.toString(d1 + Double.valueOf(state.getOperandStack().pop().split(" ")[0]));
+    } else if (type == 'f') {
+      sum =
+          Float.toString(Float.valueOf(state.getOperandStack().pop().split(" ")[0])
+              + Float.valueOf(state.getOperandStack().pop().split(" ")[0]));
+    } else if (type == 'l') {
+      long l1 = Long.valueOf(state.getOperandStack().pop().split(" ")[0]);
+      state.getOperandStack().pop();
+      state.getOperandStack().pop();
+      sum = Long.toString(l1 + Long.valueOf(state.getOperandStack().pop().split(" ")[0]));
+    }
+    state.getOperandStack().push(sum + " (type: " + type + ")");
+    if (type == 'd' || type == 'l') {
+      state.getOperandStack().push(sum + " (type: " + type + ")");
+    }
     Main.stateQueue.add(state);
   }
 
@@ -263,4 +306,5 @@ public class OpCode {
   private static Integer getByteNr(String lineToken) {
     return Integer.valueOf(lineToken.substring(0, lineToken.length() - 1));
   }
+
 }
