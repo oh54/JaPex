@@ -16,7 +16,7 @@ public class OpCode {
         if (parameter.contains(".")) {
           parameter = parameter.substring(parameter.lastIndexOf('.') + 1);
         }
-        StoredValue storedValue=new StoredValue("method parameter", parameter);
+        StoredValue storedValue = new StoredValue("method parameter", parameter);
         localVariables.add(storedValue);
         if (parameter.equals("long") || parameter.equals("double")) {
           localVariables.add(storedValue);
@@ -238,8 +238,8 @@ public class OpCode {
             beautifyText(line, "store a type " + type
                 + " value (popped from stack) into a local variable #" + index), byteNr);
     state.setLocalVariableElement(index, state.popStack());
-    if (isLD(index,state)){
-      state.setLocalVariableElement(index+1, state.popStack());
+    if (isLD(index, state)) {
+      state.setLocalVariableElement(index + 1, state.popStack());
     }
     Main.stateQueue.add(state);
   }
@@ -250,11 +250,10 @@ public class OpCode {
         createState(
             beautifyText(line, "Increment local variable #" + index + " by signed byte const "
                 + constant), byteNr);
-    StoredValue value=state.getLocalVariables().get(index);
+    StoredValue value = state.getLocalVariables().get(index);
     value.addToValue(Integer.valueOf(constant));
 
-    state.setLocalVariableElement(index,
-        value);
+    state.setLocalVariableElement(index, value);
     Main.stateQueue.add(state);
   }
 
@@ -265,11 +264,11 @@ public class OpCode {
         createState(
             beautifyText(line, "load the type " + type + " value " + value + " onto the stack"),
             byteNr);
+    StoredValue storedValue = new StoredValue(value, String.valueOf(type));
 
+    state.getOperandStack().push(storedValue);
     if (type == 'l' || type == 'd') {
-      state.getOperandStack().push(new StoredValue(value, String.valueOf(type), true));
-    } else {
-      state.getOperandStack().push(new StoredValue(value, String.valueOf(type)));
+      state.getOperandStack().push(storedValue);
     }
     Main.stateQueue.add(state);
   }
@@ -303,11 +302,10 @@ public class OpCode {
           Long.toString(Long.valueOf(state.popStack().getValue())
               + Long.valueOf(state.popStack().getValue()));
     }
+    StoredValue storedState = new StoredValue(String.valueOf(sum), String.valueOf(type));
+    state.getOperandStack().push(storedState);
     if (type == 'd' || type == 'l') {
-      state.getOperandStack()
-          .push(new StoredValue(String.valueOf(sum), String.valueOf(type), true));
-    } else {
-      state.getOperandStack().push(new StoredValue(String.valueOf(sum), String.valueOf(type)));
+      state.getOperandStack().push(storedState);
     }
     Main.stateQueue.add(state);
   }

@@ -80,7 +80,7 @@ public class Main {
         varNr--;
       }
       first = false;
-      ui.addStack(varNr++ + ". " + value.toString());
+      ui.addStack(varNr++ + ":  " + value.toString());
     }
   }
 
@@ -95,7 +95,7 @@ public class Main {
         varNr--;
       }
       first=false;
-      ui.addLocals(varNr++ + ". " + storedValue.toString());
+      ui.addLocals(varNr++ + ":  " + storedValue.toString());
     }
   }
 }
