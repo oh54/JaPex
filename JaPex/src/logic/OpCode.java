@@ -84,9 +84,7 @@ public class OpCode {
 
         case 6:
           System.out.println("works6!");
-          // TODO
           add(line, getByteNr(lineTokens[0]));
-          // iadd, dadd, fadd, ladd
           break;
 
         case 7:
@@ -95,38 +93,32 @@ public class OpCode {
 
         case 8:
           System.out.println("works8!");
-          // TODO
-          // fdiv, idiv, ldiv etc
+          div(line, getByteNr(lineTokens[0]));
           break;
 
         case 9:
           System.out.println("works9!");
-          // TODO
-          // dmul, fmul, imul, lmul
+          mul(line, getByteNr(lineTokens[0]));
           break;
 
         case 10:
           System.out.println("works10!");
-          // TODO
-          // dneg, lneg, fneg, ineg
+          neg(line, getByteNr(lineTokens[0]));
           break;
 
         case 11:
           System.out.println("works11!");
-          // TODO
-          // drem, lrem, frem, irem
+          rem(line, getByteNr(lineTokens[0]));
           break;
 
         case 12:
           System.out.println("works12!");
-          // TODO
-          // dsub, lsub, fsub, isub
+          sub(line, getByteNr(lineTokens[0]));
           break;
 
         case 13:
           System.out.println("works13!");
-          // TODO
-          // pop, pop2
+          pop(line, inputCode, getByteNr(lineTokens[0]));
           break;
 
         case 14:
@@ -273,11 +265,6 @@ public class OpCode {
     Main.stateQueue.add(state);
   }
 
-  /*
-   * To test add method: public static double meetod(double, int); Code: 0: iinc 2, 1 3: iconst_2 4:
-   * iconst_2 4: iadd 5: fconst_1 6: fconst_1 7: fadd 10: dconst_1 13: dconst_1 14: dadd 17:
-   * lconst_1 20: lconst_1 23: ladd 24: iload_2 25: i2d 26: dadd 27: dreturn
-   */
   private static void add(String line, int byteNr) {
     char type = line.split(" ")[1].charAt(0);
     State state =
@@ -308,6 +295,185 @@ public class OpCode {
     if (type == 'd' || type == 'l') {
       state.getOperandStack().push(storedState);
     }
+    Main.stateQueue.add(state);
+  }
+
+  private static void sub(String line, int byteNr) {
+    char type = line.split(" ")[1].charAt(0);
+    State state =
+        createState(beautifyText(line, "subtract two values of the following type: " + type),
+            byteNr);
+    String sum = "";
+
+    if (type == 'i') {
+      int i1 = Integer.valueOf(state.popStack().getValue());
+      sum = Integer.toString(Integer.valueOf(state.popStack().getValue()) - i1);
+    } else if (type == 'd') {
+      double d1 = Double.valueOf(state.popStack().getValue());
+      state.popStack();
+      state.popStack();
+      sum = Double.toString(Double.valueOf(state.popStack().getValue()) - d1);
+    } else if (type == 'f') {
+      float f1 = Float.valueOf(state.popStack().getValue());
+      sum = Float.toString(Float.valueOf(state.popStack().getValue()) - f1);
+    } else if (type == 'l') {
+      long l1 = Long.valueOf(state.popStack().getValue());
+      state.popStack();
+      state.popStack();
+      sum = Long.toString(Long.valueOf(state.popStack().getValue()) - l1);
+    }
+    StoredValue storedState = new StoredValue(String.valueOf(sum), String.valueOf(type));
+    state.getOperandStack().push(storedState);
+    if (type == 'd' || type == 'l') {
+      state.getOperandStack().push(storedState);
+    }
+    Main.stateQueue.add(state);
+  }
+
+  private static void div(String line, int byteNr) {
+    char type = line.split(" ")[1].charAt(0);
+    State state =
+        createState(beautifyText(line, "divide two values of the following type: " + type), byteNr);
+    String sum = "";
+
+    if (type == 'i') {
+      int i1 = Integer.valueOf(state.popStack().getValue());
+      sum = Integer.toString(Integer.valueOf(state.popStack().getValue()) / i1);
+    } else if (type == 'd') {
+      double d1 = Double.valueOf(state.popStack().getValue());
+      state.popStack();
+      state.popStack();
+      sum = Double.toString(Double.valueOf(state.popStack().getValue()) / d1);
+    } else if (type == 'f') {
+      float f1 = Float.valueOf(state.popStack().getValue());
+      sum = Float.toString(Float.valueOf(state.popStack().getValue()) / f1);
+    } else if (type == 'l') {
+      long l1 = Long.valueOf(state.popStack().getValue());
+      state.popStack();
+      state.popStack();
+      sum = Long.toString(Long.valueOf(state.popStack().getValue()) / l1);
+    }
+    StoredValue storedState = new StoredValue(String.valueOf(sum), String.valueOf(type));
+    state.getOperandStack().push(storedState);
+    if (type == 'd' || type == 'l') {
+      state.getOperandStack().push(storedState);
+    }
+    Main.stateQueue.add(state);
+  }
+
+  private static void mul(String line, int byteNr) {
+    char type = line.split(" ")[1].charAt(0);
+    State state =
+        createState(beautifyText(line, "multiply two values of the following type: " + type),
+            byteNr);
+    String sum = "";
+
+    if (type == 'i') {
+      sum =
+          Integer.toString(Integer.valueOf(state.popStack().getValue())
+              * Integer.valueOf(state.popStack().getValue()));
+    } else if (type == 'd') {
+      double d1 = Double.valueOf(state.popStack().getValue());
+      state.popStack();
+      state.popStack();
+      sum = Double.toString(d1 * Double.valueOf(state.popStack().getValue()));
+    } else if (type == 'f') {
+      sum =
+          Float.toString(Float.valueOf(state.popStack().getValue())
+              * Float.valueOf(state.popStack().getValue()));
+    } else if (type == 'l') {
+      long l1 = Long.valueOf(state.popStack().getValue());
+      state.popStack();
+      state.popStack();
+      sum = Long.toString(l1 * Long.valueOf(state.popStack().getValue()));
+    }
+    StoredValue storedState = new StoredValue(String.valueOf(sum), String.valueOf(type));
+    state.getOperandStack().push(storedState);
+    if (type == 'd' || type == 'l') {
+      state.getOperandStack().push(storedState);
+    }
+    Main.stateQueue.add(state);
+  }
+
+  private static void neg(String line, int byteNr) {
+    char type = line.split(" ")[1].charAt(0);
+    State state =
+        createState(beautifyText(line, "negate a value of the following type: " + type), byteNr);
+    String sum = "";
+
+    if (type == 'i') {
+      sum = Integer.toString(Integer.valueOf(state.popStack().getValue()) * -1);
+    } else if (type == 'd') {
+      state.popStack();
+      sum = Double.toString(Double.valueOf(state.popStack().getValue()) * -1.0);
+    } else if (type == 'f') {
+      sum = Float.toString(Float.valueOf(state.popStack().getValue()) * -1);
+    } else if (type == 'l') {
+      state.popStack();
+      sum = Long.toString(Long.valueOf(state.popStack().getValue()) * -1);
+    }
+    StoredValue storedState = new StoredValue(String.valueOf(sum), String.valueOf(type));
+    state.getOperandStack().push(storedState);
+    if (type == 'd' || type == 'l') {
+      state.getOperandStack().push(storedState);
+    }
+    Main.stateQueue.add(state);
+  }
+
+  private static void rem(String line, int byteNr) {
+    char type = line.split(" ")[1].charAt(0);
+    State state =
+        createState(
+            beautifyText(line, "get the remainder from a division between the two following type: "
+                + type), byteNr);
+    String sum = "";
+
+    if (type == 'i') {
+      int i1 = Integer.valueOf(state.popStack().getValue());
+      sum = Integer.toString(Integer.valueOf(state.popStack().getValue()) % i1);
+    } else if (type == 'd') {
+      double d1 = Double.valueOf(state.popStack().getValue());
+      state.popStack();
+      state.popStack();
+      sum = Double.toString(Double.valueOf(state.popStack().getValue()) % d1);
+    } else if (type == 'f') {
+      float f1 = Float.valueOf(state.popStack().getValue());
+      sum = Float.toString(Float.valueOf(state.popStack().getValue()) % f1);
+    } else if (type == 'l') {
+      long l1 = Long.valueOf(state.popStack().getValue());
+      state.popStack();
+      state.popStack();
+      sum = Long.toString(Long.valueOf(state.popStack().getValue()) % l1);
+    }
+    StoredValue storedState = new StoredValue(String.valueOf(sum), String.valueOf(type));
+    state.getOperandStack().push(storedState);
+    if (type == 'd' || type == 'l') {
+      state.getOperandStack().push(storedState);
+    }
+    Main.stateQueue.add(state);
+  }
+
+  private static void pop(String line, String input, int byteNr) {
+    State state = createState(beautifyText(line, "discard the top value(s) on the stack."), byteNr);
+    if (input == "pop") {
+      if (state.getOperandStack().peek().getType().matches("l|d")) {
+        state.popStack();
+        state.popStack();
+      } else if (state.getOperandStack().peek().getType().matches("i|f")) {
+        state.popStack();
+      }
+    } else if (input == "pop2") {
+      if (state.getOperandStack().peek().getType().matches("l|d")) {
+        state.popStack();
+        state.popStack();
+        state.popStack();
+        state.popStack();
+      } else if (state.getOperandStack().peek().getType().matches("i|f")) {
+        state.popStack();
+        state.popStack();
+      }
+    }
+    // Siin vist see stored value värk puudu? Ma ikka väga ei taju seda.
     Main.stateQueue.add(state);
   }
 
