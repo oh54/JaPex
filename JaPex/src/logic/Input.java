@@ -7,10 +7,10 @@ public class Input {
   public Input(String inputString) {
     super();
     this.inputString = inputString;
-    this.inputTokens = getInputTokens(inputString);
+    this.inputTokens = initializeInputTokens(inputString);
   }
 
-  public String[] getInputTokens(String inputString) {
+  public String[] initializeInputTokens(String inputString) {
     String[] spaceTokens = inputString.split("\n");
     for (int i = 0; i < spaceTokens.length; i++) {
       spaceTokens[i] = spaceTokens[i].trim();
@@ -18,6 +18,9 @@ public class Input {
 
     return spaceTokens;
 
+  }
+  public String[] getInputTokens(){
+    return this.inputTokens;
   }
 
   public String getLine(int currentState) {

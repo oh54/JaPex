@@ -31,27 +31,39 @@ public class Main {
     }
 
     ui = new UI();
+    Main.initalizeInput();
     ui.setVisible(true);
 
   }
 
-  public static void initalizeInput(String in) {
+  public static void initalizeInput() {
+    ui.disableButtons();
+    currentStateNr = 0;
+    stateQueue = new LinkedList<State>();
+    String in=ui.txaInput.getText();
     input = new Input(in);
+    for (String line:input.getInputTokens()){
+      OpCode.toMatch(line);
+      currentStateNr++;
+    }
+    currentStateNr = 0;
+    ui.enableButtons();
   }
 
   public static void toStart() {
     currentStateNr = 0;
-    stateQueue = new LinkedList<State>();
     ui.clearAll();
   }
 
   public static void nextState() {
-    if (!(currentStateNr < stateQueue.size())) {
-      String line = input.getLine(currentStateNr);
-      OpCode.toMatch(line);
+    if (currentStateNr < stateQueue.size()) {
+      updateUI(true);
+      currentStateNr++;
+      
+    }else{
+      ui.lblCurrent.setText("Oled jõudnud meetodi lõppu");
     }
-    updateUI(true);
-    currentStateNr++;
+    
   }
 
   public static void previousState() {
