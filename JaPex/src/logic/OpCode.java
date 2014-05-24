@@ -289,18 +289,19 @@ public class OpCode {
           Integer.toString(Integer.valueOf(state.popStack().getValue())
               + Integer.valueOf(state.popStack().getValue()));
     } else if (type == 'd') {
-      sum =
-          Double.toString(Double.valueOf(state.popStack().getValue()
-              + Double.valueOf(state.popStack().getValue())));
+      double d1 = Double.valueOf(state.popStack().getValue());
+      state.popStack();
+      state.popStack();
+      sum = Double.toString(d1 + Double.valueOf(state.popStack().getValue()));
     } else if (type == 'f') {
       sum =
           Float.toString(Float.valueOf(state.popStack().getValue())
               + Float.valueOf(state.popStack().getValue()));
     } else if (type == 'l') {
-
-      sum =
-          Long.toString(Long.valueOf(state.popStack().getValue())
-              + Long.valueOf(state.popStack().getValue()));
+      long l1 = Long.valueOf(state.popStack().getValue());
+      state.popStack();
+      state.popStack();
+      sum = Long.toString(l1 + Long.valueOf(state.popStack().getValue()));
     }
     StoredValue storedState = new StoredValue(String.valueOf(sum), String.valueOf(type));
     state.getOperandStack().push(storedState);
