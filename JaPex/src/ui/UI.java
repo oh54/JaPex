@@ -37,13 +37,13 @@ public class UI extends JFrame {
     JPanel btnPanel = new JPanel();
 
     ImageIcon fb =
-        new ImageIcon(((new ImageIcon("res/fastback.png")).getImage()).getScaledInstance(20, 20,
+        new ImageIcon(((new ImageIcon(getClass().getResource("/images/fastback.png"))).getImage()).getScaledInstance(20, 20,
             java.awt.Image.SCALE_SMOOTH), "fb");
     ImageIcon b =
-        new ImageIcon(((new ImageIcon("res/back.png")).getImage()).getScaledInstance(20, 20,
+        new ImageIcon(((new ImageIcon(getClass().getResource("/images/back.png"))).getImage()).getScaledInstance(20, 20,
             java.awt.Image.SCALE_SMOOTH), "b");
     ImageIcon f =
-        new ImageIcon(((new ImageIcon("res/forward.png")).getImage()).getScaledInstance(20, 20,
+        new ImageIcon(((new ImageIcon(getClass().getResource("/images/forward.png"))).getImage()).getScaledInstance(20, 20,
             java.awt.Image.SCALE_SMOOTH), "f");
 
     btnFB = new JButton(fb);
