@@ -553,65 +553,6 @@ public class OpCode {
     Main.stateQueue.add(state);
   }
 
-  private static void cmp(String line, String type, int byteNr) {
-    State state =
-        createState(
-            beautifyText(line, "compare two values of the following type: " + type.charAt(0)),
-            byteNr);
-    if (type == "lcmp") {
-      long l1 = Long.valueOf(state.popStack().getValue());
-      state.popStack();
-      state.popStack();
-      long l2 = Long.valueOf(state.popStack().getValue());
-      if (l1 == l2) {
-        // Mingi stroredstate?
-        // Push int with value 0 into the stack.
-      } else if (l1 > l2) {
-        // Push int with value -1 into the stack.
-      } else if (l2 > l1) {
-        // Push int with value 1 into the stack.
-      }
-    } else if (type == "fcmpl" || type == "fcmpg") {
-      float f1 = Long.valueOf(state.popStack().getValue());
-      float f2 = Long.valueOf(state.popStack().getValue());
-      if (f1 == f2) {
-        // Push int with value 0 into the stack.
-      } else if (f1 > f2) {
-        // Push int with value -1 into the stack.
-      } else if (f2 < f1) {
-        // Push int with value 1 into the stack.
-      } else if (Float.isNaN(f1) || Float.isNaN(f2)) {
-        if (type == "fcmpl") {
-          // Push int with value -1 into the stack.
-        } else { // type == fcmpg
-          // Push int with value 1 into the stack.
-        }
-      }
-    } else if (type == "dcmpl" || type == "dcmpg") {
-      double d1 = Double.valueOf(state.popStack().getValue());
-      double d2 = Double.valueOf(state.popStack().getValue());
-      if (d1 == d2) {
-        // Push int with value 0 into the stack.
-      } else if (d1 == d2) {
-        // Push int with value -1 into the stack.
-      } else if (d2 < d1) {
-        // Push int with value 1 into the stack.
-      } else if (Double.isNaN(d1) || Double.isNaN(d2)) {
-        if (type == "dcmpl") {
-          // Push int with value -1 into the stack.
-        } else { // type == dcmpg
-          // Push int with value 1 into the stack.
-        }
-      }
-    }
-    /*
-     * dcmpg dcmpl fcmpg fcmpl lcmp
-     */
-    // state.getOperandStack().push(storedState);
-
-    Main.stateQueue.add(state);
-  }
-
   private static void pop(String line, String input, int byteNr) {
     State state = createState(beautifyText(line, "discard the top value(s) on the stack."), byteNr);
     if (input.equals("pop")) {
@@ -630,6 +571,42 @@ public class OpCode {
             beautifyText(line, "create new object of type " + type
                 + " by class reference in constant pool " + index), byteNr);
     state.addStack(new StoredValue("objectref", type));
+    Main.stateQueue.add(state);
+  }
+
+  private static void cmp(String line, String type, int byteNr) {
+    State state =
+        createState(
+            beautifyText(line, "compare two values of the following type: " + type.charAt(0)),
+            byteNr);
+    StoredValue storedState = new StoredValue("", "");
+    double d1 = 0.0;
+    double d2 = 0.0;
+    if (type.equals("lcmp") || type.equals("dcmpl") || type.equals("dcmpg")) {
+      System.out.println("test");
+      d1 = Double.valueOf(state.popStack().getValue());
+      state.popStack();
+      state.popStack();
+      d2 = Double.valueOf(state.popStack().getValue());
+    } else if (type.equals("fcmpl") || type.equals("fcmpg")) {
+      d1 = Double.valueOf(state.popStack().getValue());
+      d2 = Double.valueOf(state.popStack().getValue());
+    }
+    if (d1 == d2) {
+      System.out.println("test2");
+      storedState = new StoredValue("0", "i");
+    } else if (d1 == d2) {
+      storedState = new StoredValue("-1", "i");
+    } else if (d2 < d1) {
+      storedState = new StoredValue("1", "i");
+    } else if (Double.isNaN(d1) || Double.isNaN(d2)) {
+      if (type.equals("dcmpl")) {
+        storedState = new StoredValue("-1", "i");
+      } else {
+        storedState = new StoredValue("1", "i");
+      }
+    }
+    state.getOperandStack().push(storedState);
     Main.stateQueue.add(state);
   }
 
