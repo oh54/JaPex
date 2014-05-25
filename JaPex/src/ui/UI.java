@@ -79,9 +79,21 @@ public class UI extends JFrame {
     JLabel lblStack = new JLabel("<html><b>Operand Stack</b></html>");
 
     txaInput =
-        new JTextArea("  public static double meetod(double, int);\r\n" + "    Code:\r\n"
-            + "       0: iinc          2, 1\r\n" + "       3: iconst_0\r\n"
-            + "       4: istore_3\r\n" + "       5: iload_3\r\n" + "       6: iconst_4");
+        new JTextArea("  public static double some(double, double, java.lang.String);\r\n" + 
+            "    Code:\r\n" + 
+            "       0: iconst_0\r\n" + 
+            "       1: istore        5\r\n" + 
+            "       3: iload         5\r\n" + 
+            "       5: iconst_4\r\n" + 
+            "       6: if_icmpge     19\r\n" + 
+            "       9: dload_0\r\n" + 
+            "      10: dconst_1\r\n" + 
+            "      11: dadd\r\n" + 
+            "      12: dstore_0\r\n" + 
+            "      13: iinc          5, 1\r\n" + 
+            "      16: goto          3\r\n" + 
+            "      19: dload_2\r\n" + 
+            "      20: dreturn");
     JScrollPane scrlpInput = new JScrollPane(txaInput);
 
     pnlWrap.add(btnPanel);

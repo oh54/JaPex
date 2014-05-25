@@ -22,8 +22,17 @@ public class StoredValue {
   }
 
   // using reveresed polish notation
-  public void addToValue(int constant) {
-    this.value += (constant >= 0 ? " " + constant + " +" : " " + constant + " -");
+  public void addToValue(String constant) {
+    if (this.value.matches("-?\\d+(\\.\\d+)?") && constant.matches("-?\\d+(\\.\\d+)?")) {
+      if (this.type.matches("d|f")) {
+        this.value = String.valueOf(Double.valueOf(this.value) + Double.valueOf(constant));
+      } else {
+        this.value = String.valueOf(Integer.valueOf(this.value) + Integer.valueOf(constant));
+      }
+    } else {
+      this.value +=
+          (Integer.valueOf(constant) >= 0 ? " " + constant + " +" : " " + constant + " -");
+    }
   }
 
   public void multiplyValue(int constant) {

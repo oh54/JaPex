@@ -1,40 +1,35 @@
 package logic;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 public class Input {
   private String inputString;
-  private String[] inputTokens;
+  List<Integer> byteNrList= new LinkedList<Integer>();
+  Map<Integer,String> byteNrToLine=new HashMap<Integer,String>();
 
   public Input(String inputString) {
     super();
     this.inputString = inputString;
-    this.inputTokens = initializeInputTokens(inputString);
+    initializeInputTokens(inputString);
   }
 
-  public String[] initializeInputTokens(String inputString) {
+  public void initializeInputTokens(String inputString) {
     String[] spaceTokens = inputString.split("\n");
-    for (int i = 0; i < spaceTokens.length; i++) {
-      spaceTokens[i] = spaceTokens[i].trim();
+    byteNrToLine.put(-2,spaceTokens[0].trim());
+    byteNrList.add(-2);
+    byteNrToLine.put(-1,spaceTokens[1].trim());
+    byteNrList.add(-1);
+    for (int i = 2; i < spaceTokens.length; i++) {
+      int byteNr=Integer.valueOf(spaceTokens[i].substring(0,spaceTokens[i].indexOf(':')).trim());
+      byteNrList.add(byteNr);
+      byteNrToLine.put(byteNr,spaceTokens[i].trim());
     }
 
-    return spaceTokens;
 
   }
 
-  public String[] getInputTokens() {
-    return this.inputTokens;
-  }
-
-  public String getLine(int currentState) {
-    String line = inputTokens[currentState];
-    return line;
-  }
-
-  public String previousLine(int currentState) {
-    if (currentState > 0) {
-      String line = inputTokens[currentState - 1];
-      return line;
-    }
-    return inputTokens[currentState];
-  }
 
 }

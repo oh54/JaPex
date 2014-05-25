@@ -44,6 +44,10 @@ public class State implements Cloneable {
     return this.operandStack.pop();
   }
 
+  public int getByteNr() {
+    return byteNr;
+  }
+
   public Stack<StoredValue> getOperandStack() {
     return operandStack;
   }

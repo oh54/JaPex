@@ -11,8 +11,10 @@ public class Main {
   public static Input input;
   public static LinkedList<State> stateQueue = new LinkedList<State>();
   public static int currentStateNr = 0;
+  public static int currentByteNrIndex=0;
   public static UI ui;
   public static int varNr;
+  public static boolean reachedReturn;
 
   public static void main(String[] args) throws ClassNotFoundException, InstantiationException,
       IllegalAccessException, UnsupportedLookAndFeelException {
@@ -38,12 +40,17 @@ public class Main {
 
   public static void initalizeInput() {
     ui.disableButtons();
+    ui.clearAll();
     currentStateNr = 0;
+    currentByteNrIndex=0;
+    reachedReturn=false;
     stateQueue = new LinkedList<State>();
     String in = ui.txaInput.getText();
     input = new Input(in);
-    for (String line : input.getInputTokens()) {
-      OpCode.toMatch(line);
+    while(!reachedReturn) {
+      int currentByteNrIndexCheck=currentByteNrIndex;
+      OpCode.toMatch(input.byteNrToLine.get(input.byteNrList.get(currentByteNrIndex)));
+      currentByteNrIndex=(currentByteNrIndexCheck==currentByteNrIndex)? currentByteNrIndex+1:currentByteNrIndex;
       currentStateNr++;
     }
     currentStateNr = 0;
@@ -61,7 +68,7 @@ public class Main {
       currentStateNr++;
 
     } else {
-      ui.lblCurrent.setText("Oled jõudnud meetodi lõppu");
+      ui.lblCurrent.setText("Oled jõudnud meetodi lõppu.");
     }
 
   }
@@ -89,10 +96,11 @@ public class Main {
     for (int i = stateQueue.get(stateIndex).getOperandStack().size() - 1; i >= 0; i--) {
       StoredValue value = stateQueue.get(stateIndex).getOperandStack().get(i);
       if (!first && value == stateQueue.get(stateIndex).getOperandStack().get(i + 1)) {
-        varNr--;
-      }
+        ui.addStack(varNr-1 + ":  " + value.toString());
+      }else{
       first = false;
-      ui.addStack(varNr++ + ":  " + value.toString());
+      ui.addStack(varNr + ":  " + value.toString());}
+      varNr++;
     }
   }
 
@@ -104,10 +112,10 @@ public class Main {
       if (!first
           && storedValue == stateQueue.get(stateIndex).getLocalVariables()
               .get(stateQueue.get(stateIndex).getLocalVariables().lastIndexOf(storedValue) - 1)) {
-        varNr--;
-      }
+        ui.addLocals(varNr++ -1 + ":  " + storedValue.toString());
+      }else{
       first = false;
-      ui.addLocals(varNr++ + ":  " + storedValue.toString());
+      ui.addLocals(varNr++ + ":  " + storedValue.toString());}
     }
   }
 }

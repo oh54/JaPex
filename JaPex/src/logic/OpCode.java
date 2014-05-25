@@ -7,14 +7,14 @@ import java.util.Stack;
 public class OpCode {
   public static void toMatch(String line) {
 
-    if (Main.currentStateNr == 0) {
+    if (Main.currentByteNrIndex == 0) {
       String[] parameters = line.substring(line.indexOf('(') + 1, line.indexOf(')')).split(",");
       List<StoredValue> localVariables = new ArrayList<StoredValue>();
       for (String parameter : parameters) {
 
         parameter = parameter.trim();
         if (parameter.contains(".")) {
-          parameter = parameter.substring(parameter.lastIndexOf('.') + 1);
+          parameter = parameter.substring(parameter.lastIndexOf('.') + 1,parameter.lastIndexOf('.') + 2).toLowerCase();
         }
         StoredValue storedValue = new StoredValue("method parameter", parameter);
         localVariables.add(storedValue);
@@ -26,7 +26,7 @@ public class OpCode {
           "Method parameters are stored in local variables"), -1, localVariables,
           new Stack<StoredValue>()));
 
-    } else if (Main.currentStateNr == 1) {
+    } else if (Main.currentByteNrIndex == 1) {
       Main.stateQueue.add(createState(beautifyText(line, ""), -1));
     } else {
 
@@ -36,7 +36,7 @@ public class OpCode {
               "[dfil]div$", "[dfil]mul$", "[dfil]neg", "[dfil]rem", "[dfil]sub", "pop|pop2",
               "new$", "sipush$", "ldc|ldc_w", "if(eq|ge|gt|le|lt|ne)$", "goto|goto_w",
               "[lfd]cmp([gl])*", "get(field|static)", "invoke(dynamic|special|static)",
-              "instanceof", "if_[ai]cmp(eq|ne|ge|gt|le|lt)"};
+              "instanceof", "if_[ai]cmp(eq|ne|ge|gt|le|lt)", ".return"};
 
       String[] lineTokens = line.split("( )+");
       String inputCode = lineTokens[1];
@@ -52,7 +52,7 @@ public class OpCode {
       switch (matchingIndex) {
         case 0:
           iinc(line, getByteNr(lineTokens[0]),
-              Integer.valueOf(lineTokens[2].substring(0, lineTokens[0].length() - 1)),
+              Integer.valueOf(lineTokens[2].substring(0, lineTokens[2].length() - 1)),
               lineTokens[3]);
           break;
 
@@ -147,8 +147,7 @@ public class OpCode {
 
         case 18:
           System.out.println("works18!");
-          // TODO
-          // goto, goto_w
+          goTo(line, getByteNr(lineTokens[0]),Integer.valueOf(lineTokens[2]));
           break;
 
         case 19:
@@ -180,15 +179,104 @@ public class OpCode {
           ifcmp(line, getByteNr(lineTokens[0]), Integer.valueOf(lineTokens[2]));
           // if_acmpeq,if_acmpne,if_icmpeq,if_icmpge,if_icmpgt,if_icmple,if_icmplt,if_icmpne
           break;
+        case 24:
+          returnOp(line, getByteNr(lineTokens[0]));
+          break;
       }
     }
   }
 
+  private static void goTo(String line, Integer byteNr, Integer goTo) {
+    State state=createState(beautifyText(line, "goes to another instruction at "+goTo), byteNr);
+    Main.currentByteNrIndex = Main.input.byteNrList.indexOf(goTo);
+    Main.stateQueue.add(state);
+    
+  }
+
+  private static void returnOp(String line, int byteNr) {
+    State state =
+        createState(beautifyText(line, "return a value from the method,unless void"), byteNr);
+    state.popStack();
+    try {
+      state.popStack();
+    } finally {
+      Main.stateQueue.add(state);
+      Main.reachedReturn = true;
+    }
+  }
 
   private static void ifcmp(String line, Integer byteNr, int goTo) {
     char type = line.split(" ")[1].charAt(0);
+    String explType = (type == 'i' ? "ints" : "object references");
+    State state = createState(line, byteNr);
     String cmpMethod = line.substring(line.indexOf("cmp") + 3, line.indexOf("cmp") + 5);
     switch (cmpMethod) {
+      case "eq":
+        state.setLine(beautifyText(line, "If" + explType + "are equal, branch to instruction at "
+            + goTo));
+        if (type == 'i') {
+          if (Integer.valueOf(state.popStack().getValue()) == Integer.valueOf(state.popStack()
+              .getValue())) {
+            Main.currentByteNrIndex = Main.input.byteNrList.indexOf(goTo);
+          }
+        } else {
+          if (state.popStack() == state.popStack()) {
+            Main.currentByteNrIndex = Main.input.byteNrList.indexOf(goTo);
+          }
+        }
+        Main.stateQueue.add(state);
+        break;
+      case "ne":
+        state.setLine(beautifyText(line, "If" + explType
+            + "are not equal, branch to instruction at " + goTo));
+        if (type == 'i') {
+          if (Integer.valueOf(state.popStack().getValue()) != Integer.valueOf(state.popStack()
+              .getValue())) {
+            Main.currentByteNrIndex = Main.input.byteNrList.indexOf(goTo);
+          }
+        } else {
+          if (state.popStack() != state.popStack()) {
+            Main.currentByteNrIndex = Main.input.byteNrList.indexOf(goTo);
+          }
+        }
+        Main.stateQueue.add(state);
+        break;
+      case "lt":
+        state.setLine(beautifyText(line, "if value1 is less than value2, branch to instruction at"
+            + goTo));
+        if (Integer.valueOf(state.popStack().getValue()) > Integer.valueOf(state.popStack()
+            .getValue())) {
+          Main.currentByteNrIndex = Main.input.byteNrList.indexOf(goTo);
+        }
+        Main.stateQueue.add(state);
+        break;
+      case "ge":
+        state.setLine(beautifyText(line,
+            "if value1 is greater or equal than value2, branch to instruction at" + goTo));
+        if (Integer.valueOf(state.popStack().getValue()) <= Integer.valueOf(state.popStack()
+            .getValue())) {
+          Main.currentByteNrIndex = Main.input.byteNrList.indexOf(goTo);
+        }
+        Main.stateQueue.add(state);
+        break;
+      case "gt":
+        state.setLine(beautifyText(line,
+            "if value1 is greater than value2, branch to instruction at" + goTo));
+        if (Integer.valueOf(state.popStack().getValue()) < Integer.valueOf(state.popStack()
+            .getValue())) {
+          Main.currentByteNrIndex = Main.input.byteNrList.indexOf(goTo);
+        }
+        Main.stateQueue.add(state);
+        break;
+      case "le":
+        state.setLine(beautifyText(line,
+            "if value1 is less or equal than value2, branch to instruction at" + goTo));
+        if (Integer.valueOf(state.popStack().getValue()) >= Integer.valueOf(state.popStack()
+            .getValue())) {
+          Main.currentByteNrIndex = Main.input.byteNrList.indexOf(goTo);
+        }
+        Main.stateQueue.add(state);
+        break;
     }
   }
 
@@ -213,7 +301,7 @@ public class OpCode {
 
 
   private static boolean isLD(int index, State state) {
-    return state.getLocalVariables().get(index).getType().matches("l|d");
+    return state.getLocalVariables().get(index).getType().matches("l|d|double|long");
   }
 
 
@@ -243,7 +331,7 @@ public class OpCode {
             beautifyText(line, "Increment local variable #" + index + " by signed byte const "
                 + constant), byteNr);
     StoredValue value = state.getLocalVariables().get(index);
-    value.addToValue(Integer.valueOf(constant));
+    value.addToValue(constant);
 
     state.setLocalVariableElement(index, value);
     Main.stateQueue.add(state);
@@ -270,30 +358,39 @@ public class OpCode {
     State state =
         createState(beautifyText(line, "add two values of the following type: " + type), byteNr);
     String sum = "";
-
-    if (type == 'i') {
-      sum =
-          Integer.toString(Integer.valueOf(state.popStack().getValue())
-              + Integer.valueOf(state.popStack().getValue()));
-    } else if (type == 'd') {
-      double d1 = Double.valueOf(state.popStack().getValue());
+    String operand2 = state.popStack().getValue();
+    StoredValue storedValue;
+    if (type == 'l' || type == 'd') {
       state.popStack();
       state.popStack();
-      sum = Double.toString(d1 + Double.valueOf(state.popStack().getValue()));
-    } else if (type == 'f') {
-      sum =
-          Float.toString(Float.valueOf(state.popStack().getValue())
-              + Float.valueOf(state.popStack().getValue()));
-    } else if (type == 'l') {
-      long l1 = Long.valueOf(state.popStack().getValue());
-      state.popStack();
-      state.popStack();
-      sum = Long.toString(l1 + Long.valueOf(state.popStack().getValue()));
     }
-    StoredValue storedState = new StoredValue(String.valueOf(sum), String.valueOf(type));
-    state.getOperandStack().push(storedState);
+    String operand1 = state.popStack().getValue();
+    if (operand1.matches("-?\\d+(\\.\\d+)?") && operand2.matches("-?\\d+(\\.\\d+)?")) {
+      if (type == 'i') {
+        sum = Integer.toString(Integer.valueOf(operand1) + Integer.valueOf(operand2));
+      } else if (type == 'd') {
+        sum = Double.toString(Double.valueOf(operand1) + Double.valueOf(operand2));
+      } else if (type == 'f') {
+        sum = Float.toString(Float.valueOf(operand1) + Float.valueOf(operand2));
+      } else if (type == 'l') {
+
+        sum = Long.toString(Long.valueOf(operand1) + Long.valueOf(operand2));
+
+      }
+      storedValue = new StoredValue(String.valueOf(sum), String.valueOf(type));
+    } else {
+      if (operand1.length()>=operand2.length()){
+        storedValue=new StoredValue(operand1,String.valueOf(type));
+        storedValue.addToValue(operand2);
+      }else{
+        storedValue=new StoredValue(operand2,String.valueOf(type));
+        storedValue.addToValue(operand1);
+      }
+
+    }
+    state.getOperandStack().push(storedValue);
     if (type == 'd' || type == 'l') {
-      state.getOperandStack().push(storedState);
+      state.getOperandStack().push(storedValue);
     }
     Main.stateQueue.add(state);
   }
