@@ -123,8 +123,7 @@ public class OpCode {
 
         case 14:
           System.out.println("works14!");
-          // TODO
-          // new
+          newObject(line, lineTokens[2], lineTokens[5], getByteNr(lineTokens[0]));
           break;
 
         case 15:
@@ -558,6 +557,16 @@ public class OpCode {
       state.popStack();
       state.popStack();
     }
+    Main.stateQueue.add(state);
+  }
+
+  private static void newObject(String line, String index, String type, int byteNr) {
+    type = type.split("/")[type.split("/").length - 1];
+    State state =
+        createState(
+            beautifyText(line, "create new object of type " + type
+                + " by class reference in constant pool " + index), byteNr);
+    state.addStack(new StoredValue("objectref", type));
     Main.stateQueue.add(state);
   }
 
