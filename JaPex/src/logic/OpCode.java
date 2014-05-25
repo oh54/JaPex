@@ -8,7 +8,7 @@ public class OpCode {
   static String[] regexArray = new String[] {"iinc", "[adfil]load$", "[adfil]load_[0-3]",
       "[adfil]store", "[adfil]store_[0-3]", "[dfil]2[bcdilfs]$", "[ilfd]add$",
       "[fild]const_([0-5]|m1)", "[dfil]div$", "[dfil]mul$", "[dfil]neg", "[dfil]rem", "[dfil]sub",
-      "pop|pop2", "new$", "sipush$", "ldc|ldc_w", "if(eq|ge|gt|le|lt|ne)$", "goto|goto_w",
+      "pop|pop2", "new$", "sipush$", "ldc|ldc(2)?_w", "if(eq|ge|gt|le|lt|ne)$", "goto|goto_w",
       "[lfd]cmp([gl])*", "get(field|static)", "invoke(dynamic|special|static)", "instanceof",
       "if_[ai]cmp(eq|ne|ge|gt|le|lt)", ".return"};
 
@@ -132,12 +132,12 @@ public class OpCode {
           System.out.println("works15!");
           // TODO
           // sipush
+          // Won't implement
           break;
 
         case 16:
           System.out.println("works16!");
-          // TODO
-          // ldc, ldc_w
+          ldc(line,getByteNr(lineTokens[0]),lineTokens[2], lineTokens[4],lineTokens[5]);
           break;
 
         case 17:
@@ -171,6 +171,7 @@ public class OpCode {
           System.out.println("works22!");
           // TODO
           // instanceof
+          // Won't implement
           break;
 
         case 23:
@@ -183,6 +184,27 @@ public class OpCode {
           break;
       }
     }
+  }
+
+  private static void ldc(String line, Integer byteNr, String index, String rawType,String rawValue) {
+    State state = createState(beautifyText(line,"push a constant "+index+" from a constant pool onto the stack"),byteNr);
+    String type;
+    if (rawType.charAt(0)>='a' && rawType.charAt(0)<='z'){
+      type= rawType.substring(0,1);
+    }else{
+      type=rawType;
+    }
+    if (type.matches("d|l")){
+      StoredValue storedValue=new StoredValue(rawValue.substring(0,rawValue.length()-1),type);
+      state.addStack(storedValue);
+      state.addStack(storedValue);
+    }else{
+      StoredValue storedValue=new StoredValue(rawValue,type);
+      state.addStack(storedValue);
+    }
+    Main.stateQueue.add(state);
+    
+    
   }
 
   private static void goTo(String line, Integer byteNr, Integer goTo) {
