@@ -143,8 +143,7 @@ public class OpCode {
 
         case 17:
           System.out.println("works17!");
-          // TODO
-          // ifeq, iflt, ifle etc
+          ifThenJump(line, lineTokens[1], lineTokens[1], getByteNr(lineTokens[0]));
           break;
 
         case 18:
@@ -160,7 +159,7 @@ public class OpCode {
         case 20:
           System.out.println("works20!");
           // TODO
-          // getfield, getstatic
+          // getstatic, getfield
           break;
 
         case 21:
@@ -596,6 +595,10 @@ public class OpCode {
     Main.stateQueue.add(state);
   }
 
+  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  // OR YOLO? :D
   private static void cmp(String line, String type, int byteNr) {
     State state =
         createState(
@@ -605,7 +608,6 @@ public class OpCode {
     double d1 = 0.0;
     double d2 = 0.0;
     if (type.equals("lcmp") || type.equals("dcmpl") || type.equals("dcmpg")) {
-      System.out.println("test");
       d1 = Double.valueOf(state.popStack().getValue());
       state.popStack();
       state.popStack();
@@ -615,7 +617,6 @@ public class OpCode {
       d2 = Double.valueOf(state.popStack().getValue());
     }
     if (d1 == d2) {
-      System.out.println("test2");
       storedState = new StoredValue("0", "i");
     } else if (d1 == d2) {
       storedState = new StoredValue("-1", "i");
@@ -629,6 +630,42 @@ public class OpCode {
       }
     }
     state.getOperandStack().push(storedState);
+    Main.stateQueue.add(state);
+  }
+
+  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  // OR YOLO? :D
+  private static void ifThenJump(String line, String type, String toWhere, int byteNr) {
+    State state =
+        createState(beautifyText(line, "if value is <0/0/>0 then jump to " + toWhere), byteNr);
+    int intValue = Integer.valueOf(state.popStack().getValue());
+    if (type.equals("ifeq")) {
+      if (intValue == 0) {
+        Main.currentByteNrIndex = Main.input.byteNrList.indexOf(Integer.parseInt(toWhere));
+      }
+    } else if (type.equals("ifle")) {
+      if (intValue <= 0) {
+        Main.currentByteNrIndex = Main.input.byteNrList.indexOf(Integer.parseInt(toWhere));
+      }
+    } else if (type.equals("ifne")) {
+      if (intValue != 0) {
+        Main.currentByteNrIndex = Main.input.byteNrList.indexOf(Integer.parseInt(toWhere));
+      }
+    } else if (type.equals("ifge")) {
+      if (intValue >= 0) {
+        Main.currentByteNrIndex = Main.input.byteNrList.indexOf(Integer.parseInt(toWhere));
+      }
+    } else if (type.equals("ifgt")) {
+      if (intValue > 0) {
+        Main.currentByteNrIndex = Main.input.byteNrList.indexOf(Integer.parseInt(toWhere));
+      }
+    } else if (type.equals("iflt")) {
+      if (intValue < 0) {
+        Main.currentByteNrIndex = Main.input.byteNrList.indexOf(Integer.parseInt(toWhere));
+      }
+    }
     Main.stateQueue.add(state);
   }
 
