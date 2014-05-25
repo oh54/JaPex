@@ -81,8 +81,7 @@ public class OpCode {
 
         case 5:
           System.out.println("works5!");
-          // TODO
-          // All the conversions.
+          convert(line, lineTokens[1], getByteNr(lineTokens[0]));
           break;
 
         case 6:
@@ -695,7 +694,8 @@ public class OpCode {
   // OR YOLO? :D
   private static void ifThenJump(String line, String type, String toWhere, int byteNr) {
     State state =
-        createState(beautifyText(line, "if value is <0/0/>0 then jump to " + toWhere), byteNr);
+        createState(beautifyText(line, "if integer value is <0 / 0 / >0 then jump to " + toWhere),
+            byteNr);
     int intValue = Integer.valueOf(state.popStack().getValue());
     if (type.equals("ifeq")) {
       if (intValue == 0) {
@@ -721,6 +721,64 @@ public class OpCode {
       if (intValue < 0) {
         Main.currentByteNrIndex = Main.input.byteNrList.indexOf(Integer.parseInt(toWhere));
       }
+    }
+    Main.stateQueue.add(state);
+  }
+
+  // i2b jääb välja! @@ Vaja githubi wikist ka ära võtta!
+  private static void convert(String line, String whichConversion, int byteNr) {
+    System.out.println(whichConversion);
+    System.out.println("convert " + whichConversion.charAt(0) + " to " + whichConversion.charAt(2));
+    State state =
+        createState(
+            beautifyText(line,
+                "convert " + whichConversion.charAt(0) + " to " + whichConversion.charAt(2)),
+            byteNr);
+    StoredValue storedState = new StoredValue("", "");
+
+    if (whichConversion.matches("[ld]2[fild]")) {
+      System.out.println("ei");
+      state.popStack();
+      if (whichConversion.matches("[ld]2[f]")) {
+        storedState =
+            new StoredValue(Float.toString(Float.parseFloat(state.popStack().getValue())), "f");
+      } else if (whichConversion.matches("[ld]2[i]")) {
+        storedState =
+            new StoredValue(Integer.toString(Integer.parseInt(state.popStack().getValue())), "i");
+      } else if (whichConversion.equals("d2l")) {
+        storedState =
+            new StoredValue(Long.toString(Long.parseLong(state.popStack().getValue())), "l");
+      } else if (whichConversion.equals("l2d")) {
+        storedState =
+            new StoredValue(Double.toString(Double.parseDouble(state.popStack().getValue())), "d");
+      }
+    } else if (whichConversion.matches("[if]2[dibcfsl]")) {
+      System.out.println("jah");
+      if (whichConversion.matches("[if]2[d]")) {
+        System.out.println("jah1");
+        storedState =
+            new StoredValue(Double.toString(Double.parseDouble(state.popStack().getValue())), "d");
+      } else if (whichConversion.matches("[if]2[l]")) {
+        storedState =
+            new StoredValue(Long.toString(Long.parseLong(state.popStack().getValue())), "l");
+      } else if (whichConversion.matches("f2i")) {
+        storedState =
+            new StoredValue(Integer.toString(Integer.parseInt(state.popStack().getValue())), "i");
+      } else if (whichConversion.matches("i2f")) {
+        storedState =
+            new StoredValue(Float.toString(Float.parseFloat(state.popStack().getValue())), "f");
+      } else if (whichConversion.matches("i2s")) {
+        storedState =
+            new StoredValue(Short.toString(Short.parseShort(state.popStack().getValue())), "sh");
+      } else if (whichConversion.matches("i2c")) {
+        storedState =
+            new StoredValue(Character.toString((char) (Integer
+                .parseInt(state.popStack().getValue()))), "char");
+      }
+    }
+    state.getOperandStack().push(storedState);
+    if (whichConversion.matches("[dfil]2[dl]")) {
+      state.getOperandStack().push(storedState);
     }
     Main.stateQueue.add(state);
   }
