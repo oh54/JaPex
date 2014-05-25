@@ -5,26 +5,26 @@ import java.util.List;
 import java.util.Stack;
 
 public class OpCode {
-  static String[] regexArray =
-      new String[] {"iinc", "[adfil]load$", "[adfil]load_[0-3]", "[adfil]store",
-          "[adfil]store_[0-3]", "[dfil]2[bcdilfs]$", "[ilfd]add$", "[fild]const_([0-5]|m1)",
-          "[dfil]div$", "[dfil]mul$", "[dfil]neg", "[dfil]rem", "[dfil]sub", "pop|pop2",
-          "new$", "sipush$", "ldc|ldc_w", "if(eq|ge|gt|le|lt|ne)$", "goto|goto_w",
-          "[lfd]cmp([gl])*", "get(field|static)", "invoke(dynamic|special|static)",
-          "instanceof", "if_[ai]cmp(eq|ne|ge|gt|le|lt)", ".return"};
+  static String[] regexArray = new String[] {"iinc", "[adfil]load$", "[adfil]load_[0-3]",
+      "[adfil]store", "[adfil]store_[0-3]", "[dfil]2[bcdilfs]$", "[ilfd]add$",
+      "[fild]const_([0-5]|m1)", "[dfil]div$", "[dfil]mul$", "[dfil]neg", "[dfil]rem", "[dfil]sub",
+      "pop|pop2", "new$", "sipush$", "ldc|ldc_w", "if(eq|ge|gt|le|lt|ne)$", "goto|goto_w",
+      "[lfd]cmp([gl])*", "get(field|static)", "invoke(dynamic|special|static)", "instanceof",
+      "if_[ai]cmp(eq|ne|ge|gt|le|lt)", ".return"};
+
   public static void toMatch(String line) {
 
     if (Main.currentByteNrIndex == 0) {
       String[] parameters = line.substring(line.indexOf('(') + 1, line.indexOf(')')).split(",");
       List<StoredValue> localVariables = new ArrayList<StoredValue>();
-      int i=1;
+      int i = 1;
       for (String parameter : parameters) {
 
         parameter = parameter.trim();
         if (parameter.contains(".")) {
           parameter = parameter.substring(parameter.lastIndexOf('.') + 1);
         }
-        StoredValue storedValue = new StoredValue("<method parameter#"+i+">", parameter);
+        StoredValue storedValue = new StoredValue("<method parameter#" + i + ">", parameter);
         localVariables.add(storedValue);
         if (parameter.equals("long") || parameter.equals("double")) {
           localVariables.add(storedValue);
@@ -149,13 +149,12 @@ public class OpCode {
 
         case 18:
           System.out.println("works18!");
-          goTo(line, getByteNr(lineTokens[0]),Integer.valueOf(lineTokens[2]));
+          goTo(line, getByteNr(lineTokens[0]), Integer.valueOf(lineTokens[2]));
           break;
 
         case 19:
           System.out.println("works19!");
-          // TODO
-          // lcmp, fcmpl, fcmpg, dcmpl, dcmpg
+          cmp(line, lineTokens[1], getByteNr(lineTokens[0]));
           break;
 
         case 20:
@@ -189,10 +188,10 @@ public class OpCode {
   }
 
   private static void goTo(String line, Integer byteNr, Integer goTo) {
-    State state=createState(beautifyText(line, "goes to another instruction at "+goTo), byteNr);
+    State state = createState(beautifyText(line, "goes to another instruction at " + goTo), byteNr);
     Main.currentByteNrIndex = Main.input.byteNrList.indexOf(goTo);
     Main.stateQueue.add(state);
-    
+
   }
 
   private static void returnOp(String line, int byteNr) {
@@ -332,7 +331,9 @@ public class OpCode {
         createState(
             beautifyText(line, "Increment local variable #" + index + " by signed byte const "
                 + constant), byteNr);
-    StoredValue value = new StoredValue(state.getLocalVariables().get(index).getValue(),state.getLocalVariables().get(index).getType());
+    StoredValue value =
+        new StoredValue(state.getLocalVariables().get(index).getValue(), state.getLocalVariables()
+            .get(index).getType());
     value.addToValue(constant);
 
     state.setLocalVariableElement(index, value);
@@ -341,7 +342,7 @@ public class OpCode {
 
   private static void xconst_y(String line, int byteNr) {
     char type = line.split(" ")[1].charAt(0);
-    String value = line.split("")[line.split("").length-1];
+    String value = line.split("")[line.split("").length - 1];
     State state =
         createState(
             beautifyText(line, "load the type " + type + " value " + value + " onto the stack"),
@@ -381,11 +382,11 @@ public class OpCode {
       }
       storedValue = new StoredValue(String.valueOf(sum), String.valueOf(type));
     } else {
-      if (operand1.length()>=operand2.length()){
-        storedValue=new StoredValue(operand1,String.valueOf(type));
+      if (operand1.length() >= operand2.length()) {
+        storedValue = new StoredValue(operand1, String.valueOf(type));
         storedValue.addToValue(operand2);
-      }else{
-        storedValue=new StoredValue(operand2,String.valueOf(type));
+      } else {
+        storedValue = new StoredValue(operand2, String.valueOf(type));
         storedValue.addToValue(operand1);
       }
 
@@ -549,6 +550,65 @@ public class OpCode {
     if (type == 'd' || type == 'l') {
       state.getOperandStack().push(storedState);
     }
+    Main.stateQueue.add(state);
+  }
+
+  private static void cmp(String line, String type, int byteNr) {
+    State state =
+        createState(
+            beautifyText(line, "compare two values of the following type: " + type.charAt(0)),
+            byteNr);
+    if (type == "lcmp") {
+      long l1 = Long.valueOf(state.popStack().getValue());
+      state.popStack();
+      state.popStack();
+      long l2 = Long.valueOf(state.popStack().getValue());
+      if (l1 == l2) {
+        // Mingi stroredstate?
+        // Push int with value 0 into the stack.
+      } else if (l1 > l2) {
+        // Push int with value -1 into the stack.
+      } else if (l2 > l1) {
+        // Push int with value 1 into the stack.
+      }
+    } else if (type == "fcmpl" || type == "fcmpg") {
+      float f1 = Long.valueOf(state.popStack().getValue());
+      float f2 = Long.valueOf(state.popStack().getValue());
+      if (f1 == f2) {
+        // Push int with value 0 into the stack.
+      } else if (f1 > f2) {
+        // Push int with value -1 into the stack.
+      } else if (f2 < f1) {
+        // Push int with value 1 into the stack.
+      } else if (Float.isNaN(f1) || Float.isNaN(f2)) {
+        if (type == "fcmpl") {
+          // Push int with value -1 into the stack.
+        } else { // type == fcmpg
+          // Push int with value 1 into the stack.
+        }
+      }
+    } else if (type == "dcmpl" || type == "dcmpg") {
+      double d1 = Double.valueOf(state.popStack().getValue());
+      double d2 = Double.valueOf(state.popStack().getValue());
+      if (d1 == d2) {
+        // Push int with value 0 into the stack.
+      } else if (d1 == d2) {
+        // Push int with value -1 into the stack.
+      } else if (d2 < d1) {
+        // Push int with value 1 into the stack.
+      } else if (Double.isNaN(d1) || Double.isNaN(d2)) {
+        if (type == "dcmpl") {
+          // Push int with value -1 into the stack.
+        } else { // type == dcmpg
+          // Push int with value 1 into the stack.
+        }
+      }
+    }
+    /*
+     * dcmpg dcmpl fcmpg fcmpl lcmp
+     */
+    // state.getOperandStack().push(storedState);
+
     Main.stateQueue.add(state);
   }
 
