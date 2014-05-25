@@ -79,56 +79,34 @@ public class UI extends JFrame {
     JLabel lblStack = new JLabel("<html><b>Operand Stack</b></html>");
 
     txaInput =
-        new JTextArea(" public static double some(double, double, java.lang.String);\r\n" + 
-            "   Code:\r\n" + 
-            "      0: ldc2_w        #3                  // double 2.5d\r\n" + 
-            "      3: dstore        5\r\n" + 
-            "      5: ldc2_w        #5                  // double 4.0d\r\n" + 
-            "      8: dstore        7\r\n" + 
-            "     10: ldc2_w        #7                  // double 2.0d\r\n" + 
-            "     13: dstore        9\r\n" + 
-            "     15: dload         5\r\n" + 
-            "     17: dload         7\r\n" + 
-            "     19: dmul\r\n" + 
-            "     20: dstore        11\r\n" + 
-            "     22: dload         11\r\n" + 
-            "     24: dload         9\r\n" + 
-            "     26: ddiv\r\n" + 
-            "     27: dstore        13\r\n" + 
-            "     29: dload         11\r\n" + 
-            "     31: dload         7\r\n" + 
-            "     33: drem\r\n" + 
-            "     34: dstore        15\r\n" + 
-            "     36: dload         5\r\n" + 
-            "     38: dload         7\r\n" + 
-            "     40: dadd\r\n" + 
-            "     41: dstore        17\r\n" + 
-            "     43: dload         7\r\n" + 
-            "     45: dload         5\r\n" + 
-            "     47: dsub\r\n" + 
-            "     48: dstore        19\r\n" + 
-            "     50: dload         15\r\n" + 
-            "     52: dload         17\r\n" + 
-            "     54: dcmpl\r\n" + 
-            "     55: ifle          65\r\n" + 
-            "     58: ldc           #9                  // String suurem\r\n" + 
-            "     60: astore        21\r\n" + 
-            "     62: goto          69\r\n" + 
-            "     65: ldc           #10                 // String väiksem\r\n" + 
-            "     67: astore        21\r\n" + 
-            "     69: iconst_0\r\n" + 
-            "     70: istore        21\r\n" + 
-            "     72: iload         21\r\n" + 
-            "     74: iconst_4\r\n" + 
-            "     75: if_icmpge     88\r\n" + 
-            "     78: dload_0\r\n" + 
-            "     79: dconst_1\r\n" + 
-            "     80: dadd\r\n" + 
-            "     81: dstore_0\r\n" + 
-            "     82: iinc          21, 1\r\n" + 
-            "     85: goto          72\r\n" + 
-            "     88: dload_2\r\n" + 
-            "     89: dreturn");
+        new JTextArea(" public static double some(double, double, java.lang.String);\r\n"
+            + "   Code:\r\n" + "      0: ldc2_w        #3                  // double 2.5d\r\n"
+            + "      3: dstore        5\r\n"
+            + "      5: ldc2_w        #5                  // double 4.0d\r\n"
+            + "      8: dstore        7\r\n"
+            + "     10: ldc2_w        #7                  // double 2.0d\r\n"
+            + "     13: dstore        9\r\n" + "     15: dload         5\r\n"
+            + "     17: dload         7\r\n" + "     19: dmul\r\n"
+            + "     20: dstore        11\r\n" + "     22: dload         11\r\n"
+            + "     24: dload         9\r\n" + "     26: ddiv\r\n"
+            + "     27: dstore        13\r\n" + "     29: dload         11\r\n"
+            + "     31: dload         7\r\n" + "     33: drem\r\n"
+            + "     34: dstore        15\r\n" + "     36: dload         5\r\n"
+            + "     38: dload         7\r\n" + "     40: dadd\r\n"
+            + "     41: dstore        17\r\n" + "     43: dload         7\r\n"
+            + "     45: dload         5\r\n" + "     47: dsub\r\n"
+            + "     48: dstore        19\r\n" + "     50: dload         15\r\n"
+            + "     52: dload         17\r\n" + "     54: dcmpl\r\n"
+            + "     55: ifle          65\r\n"
+            + "     58: ldc           #9                  // String suurem\r\n"
+            + "     60: astore        21\r\n" + "     62: goto          69\r\n"
+            + "     65: ldc           #10                 // String väiksem\r\n"
+            + "     67: astore        21\r\n" + "     69: iconst_0\r\n"
+            + "     70: istore        21\r\n" + "     72: iload         21\r\n"
+            + "     74: iconst_4\r\n" + "     75: if_icmpge     88\r\n" + "     78: dload_0\r\n"
+            + "     79: dconst_1\r\n" + "     80: dadd\r\n" + "     81: dstore_0\r\n"
+            + "     82: iinc          21, 1\r\n" + "     85: goto          72\r\n"
+            + "     88: dload_2\r\n" + "     89: dreturn");
     JScrollPane scrlpInput = new JScrollPane(txaInput);
 
     pnlWrap.add(btnPanel);

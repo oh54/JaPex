@@ -130,12 +130,12 @@ public class OpCode {
 
         case 15:
           System.out.println("works15!");
-          dup(line,getByteNr(lineTokens[0]));
+          dup(line, getByteNr(lineTokens[0]));
           break;
 
         case 16:
           System.out.println("works16!");
-          ldc(line,getByteNr(lineTokens[0]),lineTokens[2], lineTokens[4],lineTokens[5]);
+          ldc(line, getByteNr(lineTokens[0]), lineTokens[2], lineTokens[4], lineTokens[5]);
           break;
 
         case 17:
@@ -157,14 +157,14 @@ public class OpCode {
           System.out.println("works20!");
           // TODO
           // getstatic, getfield
-          //Won't implement
+          // Won't implement
           break;
 
         case 21:
           System.out.println("works21!");
           // TODO
           // invokedynamic, invokespecial, invokestatic
-          //Won't implement
+          // Won't implement
           break;
 
         case 22:
@@ -187,26 +187,28 @@ public class OpCode {
   }
 
   private static void dup(String line, Integer byteNr) {
-    
-    State state=createState(beautifyText(line,"duplicate the value(s) on top of the stack."), byteNr);
-    if (line.split(" ")[1].matches("dup2")){
-      StoredValue initialValue1=state.popStack();
-      StoredValue initialValue2=state.popStack();
-      StoredValue newValue1=new StoredValue(initialValue1.getValue(), initialValue1.getType());
-      StoredValue newValue2=new StoredValue(initialValue2.getValue(), initialValue2.getType());
+
+    State state =
+        createState(beautifyText(line, "duplicate the value(s) on top of the stack."), byteNr);
+    if (line.split(" ")[1].matches("dup2")) {
+      StoredValue initialValue1 = state.popStack();
+      StoredValue initialValue2 = state.popStack();
+      StoredValue newValue1 = new StoredValue(initialValue1.getValue(), initialValue1.getType());
+      StoredValue newValue2 = new StoredValue(initialValue2.getValue(), initialValue2.getType());
       state.addStack(initialValue2);
       state.addStack(initialValue1);
       state.addStack(newValue2);
       state.addStack(newValue1);
-    }else{
-      StoredValue initialValue1=state.popStack();
-      StoredValue newValue1=new StoredValue(initialValue1.getValue(), initialValue1.getType());
+    } else {
+      StoredValue initialValue1 = state.popStack();
+      StoredValue newValue1 = new StoredValue(initialValue1.getValue(), initialValue1.getType());
       state.addStack(initialValue1);
       state.addStack(newValue1);
     }
     Main.stateQueue.add(state);
-    
+
   }
+
   private static void pop(String line, String input, int byteNr) {
     State state = createState(beautifyText(line, "discard the top value(s) on the stack."), byteNr);
     if (input.equals("pop")) {
@@ -218,25 +220,28 @@ public class OpCode {
     Main.stateQueue.add(state);
   }
 
-  private static void ldc(String line, Integer byteNr, String index, String rawType,String rawValue) {
-    State state = createState(beautifyText(line,"push a constant "+index+" from a constant pool onto the stack"),byteNr);
+  private static void ldc(String line, Integer byteNr, String index, String rawType, String rawValue) {
+    State state =
+        createState(
+            beautifyText(line, "push a constant " + index + " from a constant pool onto the stack"),
+            byteNr);
     String type;
-    if (rawType.charAt(0)>='a' && rawType.charAt(0)<='z'){
-      type= rawType.substring(0,1);
-    }else{
-      type=rawType;
+    if (rawType.charAt(0) >= 'a' && rawType.charAt(0) <= 'z') {
+      type = rawType.substring(0, 1);
+    } else {
+      type = rawType;
     }
-    if (type.matches("d|l")){
-      StoredValue storedValue=new StoredValue(rawValue.substring(0,rawValue.length()-1),type);
+    if (type.matches("d|l")) {
+      StoredValue storedValue = new StoredValue(rawValue.substring(0, rawValue.length() - 1), type);
       state.addStack(storedValue);
       state.addStack(storedValue);
-    }else{
-      StoredValue storedValue=new StoredValue(rawValue,type);
+    } else {
+      StoredValue storedValue = new StoredValue(rawValue, type);
       state.addStack(storedValue);
     }
     Main.stateQueue.add(state);
-    
-    
+
+
   }
 
   private static void goTo(String line, Integer byteNr, Integer goTo) {
@@ -394,7 +399,9 @@ public class OpCode {
 
   private static void xconst_y(String line, int byteNr) {
     char type = line.split(" ")[1].charAt(0);
-    String value = (line.charAt(line.indexOf('_')+1)=='m')?"-1":line.split("")[line.split("").length - 1];
+    String value =
+        (line.charAt(line.indexOf('_') + 1) == 'm') ? "-1"
+            : line.split("")[line.split("").length - 1];
     State state =
         createState(
             beautifyText(line, "load the type " + type + " value " + value + " onto the stack"),
@@ -476,8 +483,8 @@ public class OpCode {
       }
       storedValue = new StoredValue(String.valueOf(sub), String.valueOf(type));
     } else {
-        storedValue = new StoredValue(operand2, String.valueOf(type));
-        storedValue.subFromValue(operand1);
+      storedValue = new StoredValue(operand2, String.valueOf(type));
+      storedValue.subFromValue(operand1);
 
     }
     state.getOperandStack().push(storedValue);
@@ -513,8 +520,8 @@ public class OpCode {
       }
       storedValue = new StoredValue(String.valueOf(sub), String.valueOf(type));
     } else {
-        storedValue = new StoredValue(operand2, String.valueOf(type));
-        storedValue.divideValue(operand1);
+      storedValue = new StoredValue(operand2, String.valueOf(type));
+      storedValue.divideValue(operand1);
 
     }
     state.getOperandStack().push(storedValue);
@@ -527,7 +534,8 @@ public class OpCode {
   private static void mul(String line, int byteNr) {
     char type = line.split(" ")[1].charAt(0);
     State state =
-        createState(beautifyText(line, "Multiply two values of the following type: " + type), byteNr);
+        createState(beautifyText(line, "Multiply two values of the following type: " + type),
+            byteNr);
     String sum = "";
     String operand2 = state.popStack().getValue();
     StoredValue storedValue;
@@ -579,7 +587,7 @@ public class OpCode {
     }
     if (operand1.matches("-?\\d+(\\.\\d+)?")) {
       if (type == 'i') {
-        sum = Integer.toString(Integer.valueOf(operand1) *-1);
+        sum = Integer.toString(Integer.valueOf(operand1) * -1);
       } else if (type == 'd') {
         sum = Double.toString(Double.valueOf(operand1) * -1);
       } else if (type == 'f') {
@@ -591,8 +599,8 @@ public class OpCode {
       }
       storedValue = new StoredValue(String.valueOf(sum), String.valueOf(type));
     } else {
-        storedValue = new StoredValue(operand1, String.valueOf(type));
-        storedValue.multiplyValue("-1");
+      storedValue = new StoredValue(operand1, String.valueOf(type));
+      storedValue.multiplyValue("-1");
 
 
     }
@@ -629,8 +637,8 @@ public class OpCode {
       }
       storedValue = new StoredValue(String.valueOf(sub), String.valueOf(type));
     } else {
-        storedValue = new StoredValue(operand2, String.valueOf(type));
-        storedValue.remValue(operand1);
+      storedValue = new StoredValue(operand2, String.valueOf(type));
+      storedValue.remValue(operand1);
 
     }
     state.getOperandStack().push(storedValue);
