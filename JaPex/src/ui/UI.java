@@ -81,19 +81,23 @@ public class UI extends JFrame {
     txaInput =
         new JTextArea("  public static double some(double, double, java.lang.String);\r\n" + 
             "    Code:\r\n" + 
-            "       0: iconst_0\r\n" + 
-            "       1: istore        5\r\n" + 
-            "       3: iload         5\r\n" + 
-            "       5: iconst_4\r\n" + 
-            "       6: if_icmpge     19\r\n" + 
-            "       9: dload_0\r\n" + 
-            "      10: dconst_1\r\n" + 
-            "      11: dadd\r\n" + 
-            "      12: dstore_0\r\n" + 
-            "      13: iinc          5, 1\r\n" + 
-            "      16: goto          3\r\n" + 
-            "      19: dload_2\r\n" + 
-            "      20: dreturn");
+            "       0: ldc2_w        #3                  // double 2.5d\r\n" + 
+            "       3: dstore        5\r\n" + 
+            "       5: ldc           #5                  // String lol\r\n" + 
+            "       7: astore        7\r\n" + 
+            "       9: iconst_0\r\n" + 
+            "      10: istore        8\r\n" + 
+            "      12: iload         8\r\n" + 
+            "      14: iconst_4\r\n" + 
+            "      15: if_icmpge     28\r\n" + 
+            "      18: dload_0\r\n" + 
+            "      19: dconst_1\r\n" + 
+            "      20: dadd\r\n" + 
+            "      21: dstore_0\r\n" + 
+            "      22: iinc          8, 1\r\n" + 
+            "      25: goto          12\r\n" + 
+            "      28: dload_2\r\n" + 
+            "      29: dreturn");
     JScrollPane scrlpInput = new JScrollPane(txaInput);
 
     pnlWrap.add(btnPanel);
