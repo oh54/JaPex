@@ -60,32 +60,26 @@ public class OpCode {
           break;
 
         case 1:
-          System.out.println("works!");
           load(line, getByteNr(lineTokens[0]), Integer.valueOf(lineTokens[2]));
           break;
 
         case 2:
-          System.out.println("works2!");
           load(line, getByteNr(lineTokens[0]));
           break;
 
         case 3:
-          System.out.println("works3!");
           store(line, getByteNr(lineTokens[0]), Integer.valueOf(lineTokens[2]));
           break;
 
         case 4:
-          System.out.println("works4!");
           store(line, getByteNr(lineTokens[0]));
           break;
 
         case 5:
-          System.out.println("works5!");
           convert(line, lineTokens[1], getByteNr(lineTokens[0]));
           break;
 
         case 6:
-          System.out.println("works6!");
           add(line, getByteNr(lineTokens[0]));
           break;
 
@@ -94,88 +88,72 @@ public class OpCode {
           break;
 
         case 8:
-          System.out.println("works8!");
           div(line, getByteNr(lineTokens[0]));
           break;
 
         case 9:
-          System.out.println("works9!");
           mul(line, getByteNr(lineTokens[0]));
           break;
 
         case 10:
-          System.out.println("works10!");
           neg(line, getByteNr(lineTokens[0]));
           break;
 
         case 11:
-          System.out.println("works11!");
           rem(line, getByteNr(lineTokens[0]));
           break;
 
         case 12:
-          System.out.println("works12!");
           sub(line, getByteNr(lineTokens[0]));
           break;
 
         case 13:
-          System.out.println("works13!");
           pop(line, inputCode, getByteNr(lineTokens[0]));
           break;
 
         case 14:
-          System.out.println("works14!");
           newObject(line, lineTokens[2], lineTokens[5], getByteNr(lineTokens[0]));
           break;
 
         case 15:
-          System.out.println("works15!");
           dup(line, getByteNr(lineTokens[0]));
           break;
 
         case 16:
-          System.out.println("works16!");
           ldc(line, getByteNr(lineTokens[0]), lineTokens[2], lineTokens[4], lineTokens[5]);
           break;
 
         case 17:
-          System.out.println("works17!");
-          ifThenJump(line, lineTokens[1], lineTokens[1], getByteNr(lineTokens[0]));
+          ifThenJump(line, lineTokens[1], lineTokens[2], getByteNr(lineTokens[0]));
           break;
 
         case 18:
-          System.out.println("works18!");
           goTo(line, getByteNr(lineTokens[0]), Integer.valueOf(lineTokens[2]));
           break;
 
         case 19:
-          System.out.println("works19!");
           cmp(line, lineTokens[1], getByteNr(lineTokens[0]));
           break;
 
         case 20:
-          System.out.println("works20!");
           // TODO
           // getstatic, getfield
           // Won't implement
           break;
 
         case 21:
-          System.out.println("works21!");
           // TODO
           // invokedynamic, invokespecial, invokestatic
           // Won't implement
           break;
 
         case 22:
-          System.out.println("works22!");
           // TODO
           // instanceof
           // Won't implement
           break;
 
         case 23:
-          System.out.println("works23!");
           ifcmp(line, getByteNr(lineTokens[0]), Integer.valueOf(lineTokens[2]));
           // if_acmpeq,if_acmpne,if_icmpeq,if_icmpge,if_icmpgt,if_icmple,if_icmplt,if_icmpne
           break;
@@ -658,10 +636,6 @@ public class OpCode {
     Main.stateQueue.add(state);
   }
 
-  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-  // OR YOLO? :D
   private static void cmp(String line, String type, int byteNr) {
     State state =
         createState(
@@ -681,28 +655,25 @@ public class OpCode {
     }
     if (d1 == d2) {
       storedState = new StoredValue("0", "i");
-    } else if (d1 == d2) {
+    } else if (d1 > d2) {
       storedState = new StoredValue("-1", "i");
     } else if (d2 < d1) {
       storedState = new StoredValue("1", "i");
     } else if (Double.isNaN(d1) || Double.isNaN(d2)) {
-      if (type.equals("dcmpl")) {
-        storedState = new StoredValue("-1", "i");
-      } else {
+      if (type.equals("dcmpl") || type.equals("fcmpl")) {
         storedState = new StoredValue("1", "i");
+      } else {
+        storedState = new StoredValue("-1", "i");
       }
     }
     state.getOperandStack().push(storedState);
     Main.stateQueue.add(state);
   }
 
-  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-  // OR YOLO? :D
   private static void ifThenJump(String line, String type, String toWhere, int byteNr) {
     State state =
-        createState(beautifyText(line, "if integer value is <0 / 0 / >0 then jump to " + toWhere),
+        createState(
+            beautifyText(line, "Depending on int value on top of stack, jump to " + toWhere),
             byteNr);
     int intValue = Integer.valueOf(state.popStack().getValue());
     if (type.equals("ifeq")) {
@@ -735,8 +706,6 @@ public class OpCode {
 
   // i2b jääb välja! @@ Vaja githubi wikist ka ära võtta!
   private static void convert(String line, String whichConversion, int byteNr) {
-    System.out.println(whichConversion);
-    System.out.println("convert " + whichConversion.charAt(0) + " to " + whichConversion.charAt(2));
     State state =
         createState(
             beautifyText(line,
@@ -745,7 +714,6 @@ public class OpCode {
     StoredValue storedState = new StoredValue("", "");
 
     if (whichConversion.matches("[ld]2[fild]")) {
-      System.out.println("ei");
       state.popStack();
       if (whichConversion.matches("[ld]2[f]")) {
         storedState =
@@ -761,9 +729,7 @@ public class OpCode {
             new StoredValue(Double.toString(Double.parseDouble(state.popStack().getValue())), "d");
       }
     } else if (whichConversion.matches("[if]2[dibcfsl]")) {
-      System.out.println("jah");
       if (whichConversion.matches("[if]2[d]")) {
-        System.out.println("jah1");
         storedState =
             new StoredValue(Double.toString(Double.parseDouble(state.popStack().getValue())), "d");
       } else if (whichConversion.matches("[if]2[l]")) {

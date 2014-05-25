@@ -54,7 +54,6 @@ public class Main {
           (currentByteNrIndexCheck == currentByteNrIndex) ? currentByteNrIndex + 1
               : currentByteNrIndex;
       currentStateNr++;
-      System.out.println(currentStateNr);
     }
     currentStateNr = 0;
     ui.enableButtons();
