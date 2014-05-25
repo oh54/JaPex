@@ -159,8 +159,7 @@ public class OpCode {
 
         case 20:
           System.out.println("works20!");
-          // TODO
-          // getfield, getstatic
+          ifThenJump(line, lineTokens[1], lineTokens[1], getByteNr(lineTokens[0]));
           break;
 
         case 21:
@@ -574,6 +573,9 @@ public class OpCode {
     Main.stateQueue.add(state);
   }
 
+  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
   private static void cmp(String line, String type, int byteNr) {
     State state =
         createState(
@@ -583,7 +585,6 @@ public class OpCode {
     double d1 = 0.0;
     double d2 = 0.0;
     if (type.equals("lcmp") || type.equals("dcmpl") || type.equals("dcmpg")) {
-      System.out.println("test");
       d1 = Double.valueOf(state.popStack().getValue());
       state.popStack();
       state.popStack();
@@ -593,7 +594,6 @@ public class OpCode {
       d2 = Double.valueOf(state.popStack().getValue());
     }
     if (d1 == d2) {
-      System.out.println("test2");
       storedState = new StoredValue("0", "i");
     } else if (d1 == d2) {
       storedState = new StoredValue("-1", "i");
@@ -607,6 +607,59 @@ public class OpCode {
       }
     }
     state.getOperandStack().push(storedState);
+    Main.stateQueue.add(state);
+  }
+
+  private static void ifThenJump(String line, String type, String toWhere, int byteNr) {
+    State state =
+        createState(beautifyText(line, "if value is <0/0/>0 then jump to " + toWhere), byteNr);
+    int intValue = Integer.valueOf(state.popStack().getValue());
+    if (type.equals("ifeq")) {
+      if (intValue == 0) {
+        // JumpTo toWhere.
+        // Main.currentByteNrIndex = Main.input.byteNrList.indexOf(toWhere); Midagi sellist peaks
+        // nendesse kohtadesse minema vist.
+      } else {
+        // Kas siin paneb tagasi selle inti stacki? Kui ei, siis see else mõttetu.
+        // http://cs.au.dk/~mis/dOvs/jvmspec/ref-_ifeq.html
+      }
+    } else if (type.equals("ifle")) {
+      if (intValue <= 0) {
+        // JumpTo toWhere.
+      } else {
+        // Kas siin paneb tagasi selle inti stacki?
+        // http://cs.au.dk/~mis/dOvs/jvmspec/ref-_ifeq.html
+      }
+    } else if (type.equals("ifne")) {
+      if (intValue != 0) {
+        // JumpTo toWhere.
+      } else {
+        // Kas siin paneb tagasi selle inti stacki?
+        // http://cs.au.dk/~mis/dOvs/jvmspec/ref-_ifeq.html
+      }
+    } else if (type.equals("ifge")) {
+      if (intValue >= 0) {
+        // JumpTo toWhere.
+      } else {
+        // Kas siin paneb tagasi selle inti stacki?
+        // http://cs.au.dk/~mis/dOvs/jvmspec/ref-_ifeq.html
+      }
+    } else if (type.equals("ifgt")) {
+      if (intValue > 0) {
+        // JumpTo toWhere.
+      } else {
+        // Kas siin paneb tagasi selle inti stacki?
+        // http://cs.au.dk/~mis/dOvs/jvmspec/ref-_ifeq.html
+      }
+    } else if (type.equals("iflt")) {
+      if (intValue < 0) {
+        // JumpTo toWhere.
+      } else {
+        // Kas siin paneb tagasi selle inti stacki?
+        // http://cs.au.dk/~mis/dOvs/jvmspec/ref-_ifeq.html
+      }
+    }
+    // state.getOperandStack().push(storedState); sõltub sellest, kas siin tuleb tagasi panna?
     Main.stateQueue.add(state);
   }
 
