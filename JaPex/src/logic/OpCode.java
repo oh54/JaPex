@@ -143,8 +143,7 @@ public class OpCode {
 
         case 17:
           System.out.println("works17!");
-          // TODO
-          // ifeq, iflt, ifle etc
+          ifThenJump(line, lineTokens[1], lineTokens[1], getByteNr(lineTokens[0]));
           break;
 
         case 18:
@@ -159,7 +158,8 @@ public class OpCode {
 
         case 20:
           System.out.println("works20!");
-          ifThenJump(line, lineTokens[1], lineTokens[1], getByteNr(lineTokens[0]));
+          // TODO
+          // getstatic, getfield
           break;
 
         case 21:
@@ -576,6 +576,7 @@ public class OpCode {
   // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
   // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
   // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  // OR YOLO? :D
   private static void cmp(String line, String type, int byteNr) {
     State state =
         createState(
@@ -610,56 +611,39 @@ public class OpCode {
     Main.stateQueue.add(state);
   }
 
+  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  // Needs testing!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+  // OR YOLO? :D
   private static void ifThenJump(String line, String type, String toWhere, int byteNr) {
     State state =
         createState(beautifyText(line, "if value is <0/0/>0 then jump to " + toWhere), byteNr);
     int intValue = Integer.valueOf(state.popStack().getValue());
     if (type.equals("ifeq")) {
       if (intValue == 0) {
-        // JumpTo toWhere.
-        // Main.currentByteNrIndex = Main.input.byteNrList.indexOf(toWhere); Midagi sellist peaks
-        // nendesse kohtadesse minema vist.
-      } else {
-        // Kas siin paneb tagasi selle inti stacki? Kui ei, siis see else mõttetu.
-        // http://cs.au.dk/~mis/dOvs/jvmspec/ref-_ifeq.html
+        Main.currentByteNrIndex = Main.input.byteNrList.indexOf(Integer.parseInt(toWhere));
       }
     } else if (type.equals("ifle")) {
       if (intValue <= 0) {
-        // JumpTo toWhere.
-      } else {
-        // Kas siin paneb tagasi selle inti stacki?
-        // http://cs.au.dk/~mis/dOvs/jvmspec/ref-_ifeq.html
+        Main.currentByteNrIndex = Main.input.byteNrList.indexOf(Integer.parseInt(toWhere));
       }
     } else if (type.equals("ifne")) {
       if (intValue != 0) {
-        // JumpTo toWhere.
-      } else {
-        // Kas siin paneb tagasi selle inti stacki?
-        // http://cs.au.dk/~mis/dOvs/jvmspec/ref-_ifeq.html
+        Main.currentByteNrIndex = Main.input.byteNrList.indexOf(Integer.parseInt(toWhere));
       }
     } else if (type.equals("ifge")) {
       if (intValue >= 0) {
-        // JumpTo toWhere.
-      } else {
-        // Kas siin paneb tagasi selle inti stacki?
-        // http://cs.au.dk/~mis/dOvs/jvmspec/ref-_ifeq.html
+        Main.currentByteNrIndex = Main.input.byteNrList.indexOf(Integer.parseInt(toWhere));
       }
     } else if (type.equals("ifgt")) {
       if (intValue > 0) {
-        // JumpTo toWhere.
-      } else {
-        // Kas siin paneb tagasi selle inti stacki?
-        // http://cs.au.dk/~mis/dOvs/jvmspec/ref-_ifeq.html
+        Main.currentByteNrIndex = Main.input.byteNrList.indexOf(Integer.parseInt(toWhere));
       }
     } else if (type.equals("iflt")) {
       if (intValue < 0) {
-        // JumpTo toWhere.
-      } else {
-        // Kas siin paneb tagasi selle inti stacki?
-        // http://cs.au.dk/~mis/dOvs/jvmspec/ref-_ifeq.html
+        Main.currentByteNrIndex = Main.input.byteNrList.indexOf(Integer.parseInt(toWhere));
       }
     }
-    // state.getOperandStack().push(storedState); sõltub sellest, kas siin tuleb tagasi panna?
     Main.stateQueue.add(state);
   }
 
