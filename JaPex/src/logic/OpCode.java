@@ -5,22 +5,31 @@ import java.util.List;
 import java.util.Stack;
 
 public class OpCode {
+  static String[] regexArray =
+      new String[] {"iinc", "[adfil]load$", "[adfil]load_[0-3]", "[adfil]store",
+          "[adfil]store_[0-3]", "[dfil]2[bcdilfs]$", "[ilfd]add$", "[fild]const_([0-5]|m1)",
+          "[dfil]div$", "[dfil]mul$", "[dfil]neg", "[dfil]rem", "[dfil]sub", "pop|pop2",
+          "new$", "sipush$", "ldc|ldc_w", "if(eq|ge|gt|le|lt|ne)$", "goto|goto_w",
+          "[lfd]cmp([gl])*", "get(field|static)", "invoke(dynamic|special|static)",
+          "instanceof", "if_[ai]cmp(eq|ne|ge|gt|le|lt)", ".return"};
   public static void toMatch(String line) {
 
     if (Main.currentByteNrIndex == 0) {
       String[] parameters = line.substring(line.indexOf('(') + 1, line.indexOf(')')).split(",");
       List<StoredValue> localVariables = new ArrayList<StoredValue>();
+      int i=1;
       for (String parameter : parameters) {
 
         parameter = parameter.trim();
         if (parameter.contains(".")) {
-          parameter = parameter.substring(parameter.lastIndexOf('.') + 1,parameter.lastIndexOf('.') + 2).toLowerCase();
+          parameter = parameter.substring(parameter.lastIndexOf('.') + 1);
         }
-        StoredValue storedValue = new StoredValue("method parameter", parameter);
+        StoredValue storedValue = new StoredValue("<method parameter#"+i+">", parameter);
         localVariables.add(storedValue);
         if (parameter.equals("long") || parameter.equals("double")) {
           localVariables.add(storedValue);
         }
+        i++;
       }
       Main.stateQueue.add(new State(beautifyText(line,
           "Method parameters are stored in local variables"), -1, localVariables,
@@ -30,13 +39,7 @@ public class OpCode {
       Main.stateQueue.add(createState(beautifyText(line, ""), -1));
     } else {
 
-      String[] regexArray =
-          new String[] {"iinc", "[adfil]load$", "[adfil]load_[0-3]", "[adfil]store",
-              "[adfil]store_[0-3]", "[dfil]2[bcdilfs]$", "[ilfd]add$", "[fild]const_([0-5]|m1)",
-              "[dfil]div$", "[dfil]mul$", "[dfil]neg", "[dfil]rem", "[dfil]sub", "pop|pop2",
-              "new$", "sipush$", "ldc|ldc_w", "if(eq|ge|gt|le|lt|ne)$", "goto|goto_w",
-              "[lfd]cmp([gl])*", "get(field|static)", "invoke(dynamic|special|static)",
-              "instanceof", "if_[ai]cmp(eq|ne|ge|gt|le|lt)", ".return"};
+
 
       String[] lineTokens = line.split("( )+");
       String inputCode = lineTokens[1];
@@ -329,7 +332,7 @@ public class OpCode {
         createState(
             beautifyText(line, "Increment local variable #" + index + " by signed byte const "
                 + constant), byteNr);
-    StoredValue value = state.getLocalVariables().get(index);
+    StoredValue value = new StoredValue(state.getLocalVariables().get(index).getValue(),state.getLocalVariables().get(index).getType());
     value.addToValue(constant);
 
     state.setLocalVariableElement(index, value);
@@ -338,7 +341,7 @@ public class OpCode {
 
   private static void xconst_y(String line, int byteNr) {
     char type = line.split(" ")[1].charAt(0);
-    String value = String.valueOf(line.charAt(line.length() - 1));
+    String value = line.split("")[line.split("").length-1];
     State state =
         createState(
             beautifyText(line, "load the type " + type + " value " + value + " onto the stack"),

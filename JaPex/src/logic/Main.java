@@ -68,7 +68,7 @@ public class Main {
       currentStateNr++;
 
     } else {
-      ui.lblCurrent.setText("Oled jõudnud meetodi lõppu.");
+      ui.lblCurrent.setText("You've reached the end of the method.");
     }
 
   }
