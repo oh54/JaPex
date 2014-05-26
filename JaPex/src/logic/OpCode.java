@@ -10,7 +10,7 @@ public class OpCode {
       "[fild]const_([0-5]|m1)", "[dfil]div$", "[dfil]mul$", "[dfil]neg", "[dfil]rem", "[dfil]sub",
       "pop|pop2", "new$", "dup(2)?$", "ldc|ldc(2)?_w", "if(eq|ge|gt|le|lt|ne)$", "goto|goto_w",
       "[lfd]cmp([gl])*", "get(field|static)", "invoke(dynamic|special|static)", "instanceof",
-      "if_[ai]cmp(eq|ne|ge|gt|le|lt)", ".return"};
+      "if_[ai]cmp(eq|ne|ge|gt|le|lt)", ".?return"};
 
   public static void toMatch(String line) {
 
@@ -232,6 +232,11 @@ public class OpCode {
   private static void returnOp(String line, int byteNr) {
     State state =
         createState(beautifyText(line, "return a value from the method,unless void"), byteNr);
+    if (line.split(" ")[1].equals("return")) {
+      Main.stateQueue.add(state);
+      Main.reachedReturn = true;
+      return;
+    };
     state.popStack();
     try {
       state.popStack();
@@ -720,7 +725,8 @@ public class OpCode {
             new StoredValue(Float.toString(Float.parseFloat(state.popStack().getValue())), "f");
       } else if (whichConversion.matches("[ld]2[i]")) {
         storedState =
-            new StoredValue(Integer.toString(Integer.parseInt(state.popStack().getValue())), "i");
+            new StoredValue(
+                Integer.toString((int) Double.parseDouble(state.popStack().getValue())), "i");
       } else if (whichConversion.equals("d2l")) {
         storedState =
             new StoredValue(Long.toString(Long.parseLong(state.popStack().getValue())), "l");

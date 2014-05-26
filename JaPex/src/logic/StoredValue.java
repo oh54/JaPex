@@ -30,8 +30,7 @@ public class StoredValue {
         this.value = String.valueOf(Integer.valueOf(this.value) + Integer.valueOf(constant));
       }
     } else {
-      this.value +=
-          (Integer.valueOf(constant) >= 0 ? " " + constant + " +" : " " + constant + " -");
+      this.value += " " + constant + " +";
     }
   }
 
@@ -43,8 +42,7 @@ public class StoredValue {
         this.value = String.valueOf(Integer.valueOf(this.value) - Integer.valueOf(constant));
       }
     } else {
-      this.value +=
-          (Integer.valueOf(constant) >= 0 ? " " + constant + " -" : " " + constant + " +");
+      this.value +=" " + constant + " -";
     }
   }
 
