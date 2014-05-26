@@ -24,6 +24,7 @@ public class UI extends JFrame {
   private JButton btnB;
   private JButton btnF;
   private JButton btnInit;
+  private JButton btnReadFile;
 
   public UI() {
 
@@ -50,14 +51,17 @@ public class UI extends JFrame {
     btnB = new JButton(b);
     btnF = new JButton(f);
     btnInit = new JButton("Initialize");
+    btnReadFile=new JButton("File");
 
     BtnListener btnListener = new BtnListener();
     btnInit.addActionListener(btnListener);
     btnFB.addActionListener(btnListener);
     btnB.addActionListener(btnListener);
     btnF.addActionListener(btnListener);
+    btnReadFile.addActionListener(btnListener);
 
 
+    btnPanel.add(btnReadFile);
     btnPanel.add(btnInit);
     btnPanel.add(btnFB);
     btnPanel.add(btnB);
@@ -151,6 +155,7 @@ public class UI extends JFrame {
     btnFB.setEnabled(false);
     btnF.setEnabled(false);
     btnInit.setEnabled(false);
+    btnReadFile.setEnabled(false);
   }
 
   public void enableButtons() {
@@ -158,6 +163,7 @@ public class UI extends JFrame {
     btnFB.setEnabled(true);
     btnF.setEnabled(true);
     btnInit.setEnabled(true);
+    btnReadFile.setEnabled(true);
   }
 
 }

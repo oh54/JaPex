@@ -1,5 +1,9 @@
 package logic;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 
 import javax.swing.UIManager;
@@ -17,7 +21,7 @@ public class Main {
   public static boolean reachedReturn;
 
   public static void main(String[] args) throws ClassNotFoundException, InstantiationException,
-      IllegalAccessException, UnsupportedLookAndFeelException {
+      IllegalAccessException, UnsupportedLookAndFeelException, IOException {
 
     try {
       // Set cross-platform Java L&F (also called "Metal")
@@ -36,6 +40,31 @@ public class Main {
     Main.initalizeInput();
     ui.setVisible(true);
 
+  }
+
+  public static void readJava(String path) throws IOException {
+    Runtime runtime = Runtime.getRuntime();
+    Process process = runtime.exec("javac " + path);
+    readClass(path.substring(0, path.lastIndexOf('.')) + ".class");
+  }
+
+  public static void readClass(String path) throws IOException {
+    Runtime runtime = Runtime.getRuntime();
+    Process process = runtime.exec("javap -c " + path);
+    InputStream is = process.getInputStream();
+    InputStreamReader isr = new InputStreamReader(is);
+    BufferedReader br = new BufferedReader(isr);
+    String line;
+    String input = "";
+    while (!((line = br.readLine().trim()).startsWith("public static"))) {
+
+    }
+    input += line.trim() + "\n";
+
+    while (!(line = br.readLine()).trim().equals("}")) {
+      input += line.trim() + "\n";
+    }
+    ui.txaInput.setText(input.substring(0,input.length()-1));
   }
 
   public static void initalizeInput() {
