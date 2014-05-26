@@ -45,6 +45,7 @@ public class Main {
   public static void readJava(String path) throws IOException {
     Runtime runtime = Runtime.getRuntime();
     Process process = runtime.exec("javac " + path);
+    process.destroy();
     readClass(path.substring(0, path.lastIndexOf('.')) + ".class");
   }
 
@@ -64,6 +65,7 @@ public class Main {
     while (!(line = br.readLine()).trim().equals("}")) {
       input += line.trim() + "\n";
     }
+    process.destroy();
     ui.txaInput.setText(input.substring(0,input.length()-1));
   }
 
